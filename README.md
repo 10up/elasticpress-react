@@ -39,6 +39,27 @@ const MyComponent = () => {
 };
 ```
 
+### Related Content
+
+This component outputs content related to a post.
+
+```js
+import { AutosuggestField } from 'elasticpress-react';
+
+const MyComponent = () => {
+  <>
+    <p>Here is my fancy new component.</p>
+
+    <p>Here is some related content to post 5:</p>
+
+    <RelatedContent
+      endpoint="http://myelasticsearchinstance.dev/indexname/_doc/_search"
+      postId="5"
+      />
+  </>
+};
+```
+
 ## Like what you see?
 
 <a href="http://10up.com/contact/"><img src="https://10updotcom-wpengine.s3.amazonaws.com/uploads/2016/10/10up-Github-Banner.png" width="850" alt="Work with us at 10up"></a>

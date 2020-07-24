@@ -1133,7 +1133,7 @@ var replacePlaceholderInObjectValues = function replacePlaceholderInObjectValues
   return recurseObject(obj);
 };
 
-var styles = {"container":"_styles-module__container__vT4Ul","dropdownContainer":"_styles-module__dropdownContainer__PlA2z","dropdownList":"_styles-module__dropdownList__2yOkM","dropdownItem":"_styles-module__dropdownItem__3Licv","link":"_styles-module__link__1WyR8"};
+var styles = {"container":"_vT4Ul","dropdownContainer":"_PlA2z","dropdownList":"_2yOkM","dropdownItem":"_3Licv","link":"_1WyR8"};
 
 var AutosuggestFieldItem = function AutosuggestFieldItem(_ref) {
   var result = _ref.result,
@@ -1353,5 +1353,99 @@ AutosuggestField.propTypes = {
   numResults: propTypes.number
 };
 
+var RelatedContent = function RelatedContent(_ref) {
+  var endpoint = _ref.endpoint,
+      query = _ref.query,
+      hitMap = _ref.hitMap,
+      numItems = _ref.numItems,
+      postId = _ref.postId;
+
+  var _useState = React.useState(false),
+      results = _useState[0],
+      setResults = _useState[1];
+
+  var _useState2 = React.useState(false),
+      loading = _useState2[0],
+      setLoading = _useState2[1];
+
+  var getResults = function getResults(search) {
+    var newQuery = replacePlaceholderInObjectValues(query, '%POST_ID%', postId);
+    newQuery = replacePlaceholderInObjectValues(newQuery, '%NUM_ITEMS%', numItems);
+    setLoading(true);
+    post(newQuery, endpoint).then(function (response) {
+      var newResults = [];
+
+      if (response.hits && response.hits.hits) {
+        newResults = response.hits.hits.map(hitMap);
+      }
+
+      setResults(newResults);
+      setLoading(false);
+    });
+  };
+
+  React.useEffect(function () {
+    getResults();
+  }, [postId, query, endpoint, numItems]);
+  return /*#__PURE__*/React__default.createElement("section", {
+    className: 'ep-related-content' + (loading ? ' loading' : '')
+  }, results ? /*#__PURE__*/React__default.createElement("ul", null, results.map(function (result) {
+    return /*#__PURE__*/React__default.createElement("li", {
+      key: result.post_id
+    }, /*#__PURE__*/React__default.createElement("a", {
+      href: result.permalink
+    }, result.post_title));
+  })) : '');
+};
+
+var query$1 = {
+  from: 0,
+  size: '%NUM_ITEMS%',
+  sort: [{
+    post_date: {
+      order: 'desc'
+    }
+  }],
+  query: {
+    more_like_this: {
+      like: {
+        _id: '%POST_ID%'
+      },
+      fields: ['post_title', 'post_content', 'terms.post_tag.name'],
+      min_term_freq: 1,
+      max_query_terms: 12,
+      min_doc_freq: 1
+    }
+  },
+  post_filter: {
+    bool: {
+      must: [{
+        terms: {
+          'post_type.raw': ['post']
+        }
+      }, {
+        terms: {
+          post_status: ['publish']
+        }
+      }]
+    }
+  }
+};
+RelatedContent.defaultProps = {
+  numItems: 5,
+  query: query$1,
+  hitMap: function hitMap(hit) {
+    return hit._source;
+  }
+};
+RelatedContent.propTypes = {
+  endpoint: propTypes.string.isRequired,
+  query: propTypes.object,
+  hitMap: propTypes.func,
+  numResults: propTypes.number,
+  postId: propTypes.number.isRequired
+};
+
 exports.AutosuggestField = AutosuggestField;
+exports.RelatedContent = RelatedContent;
 //# sourceMappingURL=index.js.map
