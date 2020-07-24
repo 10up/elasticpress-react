@@ -22,6 +22,14 @@
 
 ._styles-module__dropdownItem__3Licv {
   font-family: sans-serif;
+  color: #000;
+  padding: 8px 10px;
+  cursor: pointer;
+}
+
+._styles-module__dropdownItem__3Licv:hover {
+  background-color: #EEEEEE;
+  text-decoration: none;
 }
 
 ._styles-module__dropdownItem__3Licv:focus {
@@ -33,10 +41,4 @@
   color: #000;
   padding: 8px 10px;
   cursor: pointer;
-}
-
-._styles-module__link__1WyR8:hover,
-._styles-module__link__1WyR8:active {
-  background-color: #EEEEEE;
-  text-decoration: none;
 }

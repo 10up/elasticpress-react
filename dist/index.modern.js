@@ -1139,15 +1139,25 @@ const AutosuggestFieldItem = ({
       ref.current.focus();
     }
   }, [focus]);
-  const handleSelect = useCallback(() => {
+  const handleSelect = useCallback(event => {
+    if (event.key === 'Enter') {
+      handleNavigate();
+      return;
+    }
+
     setFocus(index);
   }, [result, index, setFocus]);
+
+  const handleNavigate = event => {
+    document.location = result.permalink;
+  };
+
   return /*#__PURE__*/React.createElement("li", {
     tabIndex: focus ? 0 : -1,
     role: "button",
     className: styles.dropdownItem + ' autosuggest-item',
     ref: ref,
-    onClick: handleSelect,
+    onClick: handleNavigate,
     onKeyPress: handleSelect
   }, result.post_title);
 };
@@ -1186,7 +1196,6 @@ const AutosuggestField = ({
   const [results, setResults] = useState(false);
   const [focus, setFocus] = useRoveFocus(numResults);
   const inputRef = useRef(null);
-  console.log(focus);
 
   const onChange = event => {
     setSearchValue(event.target.value);

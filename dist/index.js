@@ -1146,15 +1146,25 @@ var AutosuggestFieldItem = function AutosuggestFieldItem(_ref) {
       ref.current.focus();
     }
   }, [focus]);
-  var handleSelect = React.useCallback(function () {
+  var handleSelect = React.useCallback(function (event) {
+    if (event.key === 'Enter') {
+      handleNavigate();
+      return;
+    }
+
     setFocus(index);
   }, [result, index, setFocus]);
+
+  var handleNavigate = function handleNavigate(event) {
+    document.location = result.permalink;
+  };
+
   return /*#__PURE__*/React__default.createElement("li", {
     tabIndex: focus ? 0 : -1,
     role: "button",
     className: styles.dropdownItem + ' autosuggest-item',
     ref: ref,
-    onClick: handleSelect,
+    onClick: handleNavigate,
     onKeyPress: handleSelect
   }, result.post_title);
 };
@@ -1205,7 +1215,6 @@ var AutosuggestField = function AutosuggestField(_ref) {
       setFocus = _useRoveFocus[1];
 
   var inputRef = React.useRef(null);
-  console.log(focus);
 
   var onChange = function onChange(event) {
     setSearchValue(event.target.value);

@@ -22,6 +22,14 @@
 
 .dropdownItem {
   font-family: sans-serif;
+  color: #000;
+  padding: 8px 10px;
+  cursor: pointer;
+}
+
+.dropdownItem:hover {
+  background-color: #EEEEEE;
+  text-decoration: none;
 }
 
 .dropdownItem:focus {
@@ -33,10 +41,4 @@
   color: #000;
   padding: 8px 10px;
   cursor: pointer;
-}
-
-.link:hover,
-.link:active {
-  background-color: #EEEEEE;
-  text-decoration: none;
 }

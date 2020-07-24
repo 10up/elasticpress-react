@@ -11,10 +11,21 @@ const AutosuggestFieldItem = ({ result, focus, index, setFocus }) => {
     }
   }, [focus]);
 
-  const handleSelect = useCallback(() => {
-    // setting focus to that element when it is selected
-    setFocus(index);
-  }, [result, index, setFocus]);
+  const handleSelect = useCallback(
+    (event) => {
+      if (event.key === 'Enter') {
+        handleNavigate();
+        return;
+      }
+      // setting focus to that element when it is selected
+      setFocus(index);
+    },
+    [result, index, setFocus]
+  );
+
+  const handleNavigate = (event) => {
+    document.location = result.permalink;
+  };
 
   return (
     <li
@@ -22,7 +33,7 @@ const AutosuggestFieldItem = ({ result, focus, index, setFocus }) => {
       role='button'
       className={styles.dropdownItem + ' autosuggest-item'}
       ref={ref}
-      onClick={handleSelect}
+      onClick={handleNavigate}
       onKeyPress={handleSelect}
     >
       {result.post_title}

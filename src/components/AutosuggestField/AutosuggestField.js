@@ -25,8 +25,6 @@ const AutosuggestField = ({
   const [focus, setFocus] = useRoveFocus(numResults);
   const inputRef = useRef(null);
 
-  console.log(focus);
-
   const onChange = (event) => {
     setSearchValue(event.target.value);
 
