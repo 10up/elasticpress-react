@@ -27,15 +27,15 @@ This component outputs a search field that when typed in will autosuggest result
 import { AutosuggestField } from 'elasticpress-react';
 
 const MyComponent = () => {
-  <>
-    <p>Here is my fancy new component.</p>
+	<>
+		<p>Here is my fancy new component.</p>
 
-    <p>Here's a search input with autosuggest:</p>
+		<p>Here's a search input with autosuggest:</p>
 
-    <AutosuggestField
-      endpoint="http://myelasticsearchinstance.dev/indexname/_doc/_search"
-      />
-  </>
+		<AutosuggestField
+			endpoint="http://myelasticsearchinstance.dev/indexname/_doc/_search"
+		/>
+	</>
 };
 ```
 
@@ -47,16 +47,16 @@ This component outputs content related to a post.
 import { AutosuggestField } from 'elasticpress-react';
 
 const MyComponent = () => {
-  <>
-    <p>Here is my fancy new component.</p>
+	<>
+		<p>Here is my fancy new component.</p>
 
-    <p>Here is some related content to post 5:</p>
+		<p>Here is some related content to post 5:</p>
 
-    <RelatedContent
-      endpoint="http://myelasticsearchinstance.dev/indexname/_doc/_search"
-      postId="5"
-      />
-  </>
+		<RelatedContent
+			endpoint="http://myelasticsearchinstance.dev/indexname/_doc/_search"
+			postId="5"
+		/>
+	</>
 };
 ```
 

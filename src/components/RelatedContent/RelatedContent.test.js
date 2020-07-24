@@ -1,7 +1,7 @@
 import RelatedContent from './RelatedContent';
 
 describe('RelatedContent', () => {
-  it('is truthy', () => {
-    expect(RelatedContent).toBeTruthy();
-  });
+	it('is truthy', () => {
+		expect(RelatedContent).toBeTruthy();
+	});
 });

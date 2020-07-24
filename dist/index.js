@@ -1109,11 +1109,17 @@ var replacePlaceholderInObjectValues = function replacePlaceholderInObjectValues
     return arr.map(function (value) {
       if (Array.isArray(value)) {
         return recurseArray(value);
-      } else if (isPlainObject(value)) {
+      }
+
+      if (isPlainObject(value)) {
         return recurseObject(value);
-      } else if (typeof value === 'string' || value instanceof String) {
+      }
+
+      if (typeof value === 'string' || value instanceof String) {
         return value.replace(placeholder, replacement);
       }
+
+      return value;
     });
   };
 
@@ -1133,7 +1139,7 @@ var replacePlaceholderInObjectValues = function replacePlaceholderInObjectValues
   return recurseObject(obj);
 };
 
-var styles = {"container":"_vT4Ul","dropdownContainer":"_PlA2z","dropdownList":"_2yOkM","dropdownItem":"_3Licv","link":"_1WyR8"};
+var styles = {"container":"_styles-module__container__vT4Ul","dropdownContainer":"_styles-module__dropdownContainer__PlA2z","dropdownList":"_styles-module__dropdownList__2yOkM","dropdownItem":"_styles-module__dropdownItem__3Licv","link":"_styles-module__link__1WyR8"};
 
 var AutosuggestFieldItem = function AutosuggestFieldItem(_ref) {
   var result = _ref.result,
@@ -1146,6 +1152,11 @@ var AutosuggestFieldItem = function AutosuggestFieldItem(_ref) {
       ref.current.focus();
     }
   }, [focus]);
+
+  var handleNavigate = function handleNavigate() {
+    document.location = result.permalink;
+  };
+
   var handleSelect = React.useCallback(function (event) {
     if (event.key === 'Enter') {
       handleNavigate();
@@ -1154,19 +1165,21 @@ var AutosuggestFieldItem = function AutosuggestFieldItem(_ref) {
 
     setFocus(index);
   }, [result, index, setFocus]);
-
-  var handleNavigate = function handleNavigate(event) {
-    document.location = result.permalink;
-  };
-
   return /*#__PURE__*/React__default.createElement("li", {
     tabIndex: focus ? 0 : -1,
     role: "button",
-    className: styles.dropdownItem + ' autosuggest-item',
+    className: styles.dropdownItem + " autosuggest-item",
     ref: ref,
     onClick: handleNavigate,
     onKeyPress: handleSelect
   }, result.post_title);
+};
+
+AutosuggestFieldItem.propTypes = {
+  focus: propTypes.bool.isRequired,
+  result: propTypes.object.isRequired,
+  index: propTypes.number.isRequired,
+  setFocus: propTypes.func.isRequired
 };
 
 function useRoveFocus(size) {
@@ -1216,16 +1229,6 @@ var AutosuggestField = function AutosuggestField(_ref) {
 
   var inputRef = React.useRef(null);
 
-  var onChange = function onChange(event) {
-    setSearchValue(event.target.value);
-
-    if (event.target.value.length >= minSearchCharacters) {
-      getResults(event.target.value);
-    } else {
-      setResults(false);
-    }
-  };
-
   var getResults = function getResults(search) {
     var newQuery = replacePlaceholderInObjectValues(query, '%SEARCH_TERMS_PLACEHOLDER%', search);
     newQuery = replacePlaceholderInObjectValues(newQuery, '%NUM_RESULTS%', numResults);
@@ -1240,13 +1243,23 @@ var AutosuggestField = function AutosuggestField(_ref) {
     });
   };
 
+  var onChange = function onChange(event) {
+    setSearchValue(event.target.value);
+
+    if (event.target.value.length >= minSearchCharacters) {
+      getResults(event.target.value);
+    } else {
+      setResults(false);
+    }
+  };
+
   React.useEffect(function () {
     if (focus === -1) {
       inputRef.current.focus();
     }
   }, [focus]);
   return /*#__PURE__*/React__default.createElement("div", {
-    className: styles.container + ' ep-autosuggest-container'
+    className: styles.container + " ep-autosuggest-container"
   }, /*#__PURE__*/React__default.createElement("input", {
     onChange: onChange,
     type: "search",
@@ -1256,9 +1269,9 @@ var AutosuggestField = function AutosuggestField(_ref) {
     ref: inputRef,
     autoComplete: "off"
   }), results && results.length ? /*#__PURE__*/React__default.createElement("div", {
-    className: styles.dropdownContainer + ' ep-autosuggest'
+    className: styles.dropdownContainer + " ep-autosuggest"
   }, /*#__PURE__*/React__default.createElement("ul", {
-    className: styles.dropdownList + ' autosuggest-list',
+    className: styles.dropdownList + " autosuggest-list",
     role: "listbox"
   }, results.map(function (result, index) {
     return /*#__PURE__*/React__default.createElement(AutosuggestFieldItem, {
@@ -1368,7 +1381,7 @@ var RelatedContent = function RelatedContent(_ref) {
       loading = _useState2[0],
       setLoading = _useState2[1];
 
-  var getResults = function getResults(search) {
+  var getResults = function getResults() {
     var newQuery = replacePlaceholderInObjectValues(query, '%POST_ID%', postId);
     newQuery = replacePlaceholderInObjectValues(newQuery, '%NUM_ITEMS%', numItems);
     setLoading(true);
@@ -1388,7 +1401,7 @@ var RelatedContent = function RelatedContent(_ref) {
     getResults();
   }, [postId, query, endpoint, numItems]);
   return /*#__PURE__*/React__default.createElement("section", {
-    className: 'ep-related-content' + (loading ? ' loading' : '')
+    className: "ep-related-content" + (loading ? ' loading' : '')
   }, results ? /*#__PURE__*/React__default.createElement("ul", null, results.map(function (result) {
     return /*#__PURE__*/React__default.createElement("li", {
       key: result.post_id
@@ -1442,7 +1455,7 @@ RelatedContent.propTypes = {
   endpoint: propTypes.string.isRequired,
   query: propTypes.object,
   hitMap: propTypes.func,
-  numResults: propTypes.number,
+  numItems: propTypes.number,
   postId: propTypes.number.isRequired
 };
 

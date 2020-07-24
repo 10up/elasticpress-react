@@ -1,57 +1,70 @@
 {
-  "name": "elasticpress-react",
-  "version": "1.0.0",
-  "description": "React components for supercharging your headless Wordpress website with ElasticPress.",
-  "author": {
-    "name": "10up",
-    "email": "sales@10up.com",
-    "url": "https://10up.com"
-  },
-  "keywords": ["elasticpress", "wordpress", "search", "elasticsearch"],
-  "license": "MIT",
-  "repository": "10up/elasticpress-react",
-  "main": "dist/index.js",
-  "module": "dist/index.modern.js",
-  "source": "src/index.js",
-  "engines": {
-    "node": ">=10"
-  },
-  "scripts": {
-    "build": "microbundle-crl --no-compress --format modern,cjs",
-    "start": "microbundle-crl watch --no-compress --format modern,cjs",
-    "prepare": "run-s build",
-    "test": "run-s test:unit test:lint test:build",
-    "test:build": "run-s build",
-    "test:lint": "eslint .",
-    "test:unit": "cross-env CI=1 react-scripts test --env=jsdom",
-    "test:watch": "react-scripts test --env=jsdom"
-  },
-  "peerDependencies": {
-    "react": "^16.0.0"
-  },
-  "devDependencies": {
-    "microbundle-crl": "^0.13.10",
-    "babel-eslint": "^10.0.3",
-    "cross-env": "^7.0.2",
-    "eslint": "^6.8.0",
-    "eslint-config-prettier": "^6.7.0",
-    "eslint-config-standard": "^14.1.0",
-    "eslint-config-standard-react": "^9.2.0",
-    "eslint-plugin-import": "^2.18.2",
-    "eslint-plugin-node": "^11.0.0",
-    "eslint-plugin-prettier": "^3.1.1",
-    "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-react": "^7.17.0",
-    "eslint-plugin-standard": "^4.0.1",
-    "gh-pages": "^2.2.0",
-    "npm-run-all": "^4.1.5",
-    "prettier": "^2.0.4",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
-    "react-scripts": "^3.4.1"
-  },
-  "files": [
-    "dist"
-  ],
-  "dependencies": {}
+	"name": "elasticpress-react",
+	"version": "1.0.0",
+	"description": "React components for supercharging your headless Wordpress website with ElasticPress.",
+	"author": {
+		"name": "10up",
+		"email": "sales@10up.com",
+		"url": "https://10up.com"
+	},
+	"keywords": [
+		"elasticpress",
+		"wordpress",
+		"search",
+		"elasticsearch"
+	],
+	"license": "MIT",
+	"repository": "10up/elasticpress-react",
+	"main": "dist/index.js",
+	"module": "dist/index.modern.js",
+	"source": "src/index.js",
+	"engines": {
+		"node": ">=10"
+	},
+	"scripts": {
+		"build": "microbundle-crl --no-compress --format modern,cjs",
+		"start": "microbundle-crl watch --no-compress --format modern,cjs",
+		"prepare": "run-s build",
+		"test": "run-s test:unit test:lint test:build",
+		"test:build": "run-s build",
+		"test:lint": "eslint .",
+		"test:unit": "cross-env CI=1 react-scripts test --env=jsdom",
+		"test:watch": "react-scripts test --env=jsdom"
+	},
+	"peerDependencies": {
+		"react": "^16.0.0"
+	},
+	"devDependencies": {
+		"@10up/eslint-config": "^2.0.0",
+		"babel-eslint": "^10.1.0",
+		"cross-env": "^7.0.2",
+		"eslint": "^6.8.0",
+		"eslint-config-airbnb": "^18.2.0",
+		"eslint-config-airbnb-base": "^14.2.0",
+		"eslint-config-prettier": "^6.11.0",
+		"eslint-config-standard": "^14.1.0",
+		"eslint-config-standard-react": "^9.2.0",
+		"eslint-plugin-import": "^2.22.0",
+		"eslint-plugin-jest": "^23.18.0",
+		"eslint-plugin-jsdoc": "^22.2.0",
+		"eslint-plugin-jsx-a11y": "^6.3.1",
+		"eslint-plugin-node": "^11.0.0",
+		"eslint-plugin-prettier": "^3.1.4",
+		"eslint-plugin-promise": "^4.2.1",
+		"eslint-plugin-react": "^7.20.3",
+		"eslint-plugin-react-hooks": "^2.5.0",
+		"eslint-plugin-standard": "^4.0.1",
+		"gh-pages": "^2.2.0",
+		"microbundle-crl": "^0.13.10",
+		"npm-run-all": "^4.1.5",
+		"prettier": "^2.0.5",
+		"prop-types": "^15.7.2",
+		"react": "^16.13.1",
+		"react-dom": "^16.13.1",
+		"react-scripts": "^3.4.1"
+	},
+	"files": [
+		"dist"
+	],
+	"dependencies": {}
 }
