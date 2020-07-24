@@ -24,7 +24,7 @@ You will need an Elasticsearch instance and a WordPress website running [Elastic
 This component outputs a search field that when typed in will autosuggest results to the user.
 
 ```js
-import { AutosuggestField } from 'elasticpress-react';
+import { AutosuggestField } from '@10up/elasticpress-react';
 
 const MyComponent = () => {
 	<>
@@ -44,7 +44,7 @@ const MyComponent = () => {
 This component outputs content related to a post.
 
 ```js
-import { AutosuggestField } from 'elasticpress-react';
+import { AutosuggestField } from '@10up/elasticpress-react';
 
 const MyComponent = () => {
 	<>
