@@ -1,6 +1,6 @@
 import React from 'react';
-import { AutosuggestField, RelatedContent } from 'elasticpress-react';
-import 'elasticpress-react/dist/index.css';
+import { AutosuggestField, RelatedContent } from '@10up/elasticpress-react';
+import '@10up/elasticpress-react/dist/index.css';
 
 const App = () => {
 	return (
