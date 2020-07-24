@@ -4,7 +4,7 @@ ElasticPress React is a library of React components to supercharge your headless
 
 ## Requirements
 
-* ElasticSearch
+* Elasticsearch per [ElasticPress requirements](https://github.com/10up/ElasticPress#requirements).
 * WordPress website running [ElasticPress](https://elasticpress.io)
 
 ## Install
