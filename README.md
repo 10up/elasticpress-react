@@ -1,15 +1,15 @@
 # ElasticPress React
 
-ElasticPress React is a library of React components to supercharge your headless WordPress website with ElasticPress.
+> ElasticPress React is a library of React components to supercharge your headless WordPress website with ElasticPress.
 
-[![Support Level](https://img.shields.io/badge/support-active-green.svg)](#support-level) [![GPLv2 License](https://img.shields.io/github/license/10up/elasticpress-react.svg)](https://github.com/10up/elasticpress-react/blob/develop/LICENSE.md)
+[![Support Level](https://img.shields.io/badge/support-active-green.svg)](#support-level) [![Release Version](https://img.shields.io/github/release/10up/elasticpress-react.svg)](https://github.com/10up/elasticpress-react/releases/latest) [![GPLv2 License](https://img.shields.io/github/license/10up/elasticpress-react.svg)](https://github.com/10up/elasticpress-react/blob/develop/LICENSE.md)
 
 ## Requirements
 
 * Elasticsearch per [ElasticPress requirements](https://github.com/10up/ElasticPress#requirements).
-* WordPress website running [ElasticPress](https://elasticpress.io)
+* WordPress website running [ElasticPress](https://elasticpress.io).
 
-## Install
+## Installation
 
 To install ElasticPress React, simply install via npm:
 
@@ -65,6 +65,10 @@ const MyComponent = () => {
 ## Support Level
 
 **Active:** 10up is actively working on this, and we expect to continue work for the foreseeable future including keeping tested up to the most recent version of WordPress.  Bug reports, feature requests, questions, and pull requests are welcome.
+
+## Changelog
+
+A complete listing of all notable changes to ElasticPress React components are documented in [CHANGELOG.md](https://github.com/10up/elasticpress-react/blob/develop/CHANGELOG.md).
 
 ## Like what you see?
 
