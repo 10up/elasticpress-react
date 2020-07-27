@@ -2,7 +2,7 @@
 
 ElasticPress React is a library of React components to supercharge your headless WordPress website with ElasticPress.
 
-[![GPLv2 License](https://img.shields.io/github/license/10up/elasticpress-react.svg)](https://github.com/10up/elasticpress-react/blob/develop/LICENSE.md)
+[![Support Level](https://img.shields.io/badge/support-active-green.svg)](#support-level) [![GPLv2 License](https://img.shields.io/github/license/10up/elasticpress-react.svg)](https://github.com/10up/elasticpress-react/blob/develop/LICENSE.md)
 
 ## Requirements
 
@@ -61,6 +61,10 @@ const MyComponent = () => {
 	</>
 };
 ```
+
+## Support Level
+
+**Active:** 10up is actively working on this, and we expect to continue work for the foreseeable future including keeping tested up to the most recent version of WordPress.  Bug reports, feature requests, questions, and pull requests are welcome.
 
 ## Like what you see?
 
