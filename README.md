@@ -70,6 +70,10 @@ const MyComponent = () => {
 
 A complete listing of all notable changes to ElasticPress React components are documented in [CHANGELOG.md](https://github.com/10up/elasticpress-react/blob/develop/CHANGELOG.md).
 
+## Contributing
+
+Please read [CODE_OF_CONDUCT.md](https://github.com/10up/elasticpress-react/blob/develop/CODE_OF_CONDUCT.md) for details on our code of conduct, [CONTRIBUTING.md](https://github.com/10up/elasticpress-react/blob/develop/CONTRIBUTING.md) for details on the process for submitting pull requests to us, and [CREDITS.md](https://github.com/10up/elasticpress-react/blob/develop/CREDITS.md) for a listing of maintainers of, contributors to, and libraries used by ElasticPress React components.
+
 ## Like what you see?
 
 <a href="http://10up.com/contact/"><img src="https://10updotcom-wpengine.s3.amazonaws.com/uploads/2016/10/10up-Github-Banner.png" width="850" alt="Work with us at 10up"></a>
