@@ -46,7 +46,7 @@ const MyComponent = () => {
 This component outputs content related to a post.
 
 ```js
-import { AutosuggestField } from '@10up/elasticpress-react';
+import { RelatedContent } from '@10up/elasticpress-react';
 
 const MyComponent = () => {
 	<>
