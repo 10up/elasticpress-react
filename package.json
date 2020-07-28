@@ -13,7 +13,7 @@
 		"search",
 		"elasticsearch"
 	],
-	"license": "MIT",
+	"license": "GPL-2.0-only",
 	"repository": "10up/elasticpress-react",
 	"main": "dist/index.js",
 	"module": "dist/index.modern.js",
