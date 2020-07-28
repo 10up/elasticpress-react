@@ -1156,7 +1156,7 @@ var replacePlaceholderInObjectValues = function replacePlaceholderInObjectValues
   return recurseObject(obj);
 };
 
-var styles = {"container":"_styles-module__container__vT4Ul","dropdownContainer":"_styles-module__dropdownContainer__PlA2z","dropdownList":"_styles-module__dropdownList__2yOkM","dropdownItem":"_styles-module__dropdownItem__3Licv","link":"_styles-module__link__1WyR8"};
+var styles = {"container":"_vT4Ul","dropdownContainer":"_PlA2z","dropdownList":"_2yOkM","dropdownItem":"_3Licv","link":"_1WyR8"};
 
 var AutosuggestFieldItem = function AutosuggestFieldItem(_ref) {
   var result = _ref.result,

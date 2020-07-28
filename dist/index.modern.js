@@ -1077,38 +1077,50 @@ if (process.env.NODE_ENV !== 'production') {
 }
 });
 
-const post = async (data, endpoint) => {
-  const options = {
-    method: 'POST',
-    credentials: 'same-origin',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(data)
-  };
-  const response = await fetch(endpoint, options);
-  return response.json();
-};
-const get = async (data, endpoint) => {
-  let endpointWithParams = `${endpoint}?`;
-
-  if (data && Object.keys(data).length) {
-    endpointWithParams += Object.keys(data).map(key => `${key}=${data[key]}`).join('&');
+var post = function post(data, endpoint) {
+  try {
+    var options = {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    };
+    return Promise.resolve(fetch(endpoint, options)).then(function (response) {
+      return response.json();
+    });
+  } catch (e) {
+    return Promise.reject(e);
   }
+};
+var get = function get(data, endpoint) {
+  try {
+    var endpointWithParams = endpoint + "?";
 
-  const response = await fetch(endpointWithParams);
-  return response.json();
+    if (data && Object.keys(data).length) {
+      endpointWithParams += Object.keys(data).map(function (key) {
+        return key + "=" + data[key];
+      }).join('&');
+    }
+
+    return Promise.resolve(fetch(endpointWithParams)).then(function (response) {
+      return response.json();
+    });
+  } catch (e) {
+    return Promise.reject(e);
+  }
 };
 
-const replacePlaceholderInObjectValues = (oldObj, placeholder, replacement) => {
-  const obj = JSON.parse(JSON.stringify(oldObj));
+var replacePlaceholderInObjectValues = function replacePlaceholderInObjectValues(oldObj, placeholder, replacement) {
+  var obj = JSON.parse(JSON.stringify(oldObj));
 
-  const isPlainObject = something => {
+  var isPlainObject = function isPlainObject(something) {
     return Object.prototype.toString.call(something) === '[object Object]';
   };
 
-  const recurseArray = arr => {
-    return arr.map(value => {
+  var recurseArray = function recurseArray(arr) {
+    return arr.map(function (value) {
       if (Array.isArray(value)) {
         return recurseArray(value);
       }
@@ -1125,8 +1137,8 @@ const replacePlaceholderInObjectValues = (oldObj, placeholder, replacement) => {
     });
   };
 
-  const recurseObject = newObj => {
-    Object.keys(newObj).forEach(key => {
+  var recurseObject = function recurseObject(newObj) {
+    Object.keys(newObj).forEach(function (key) {
       if (typeof newObj[key] === 'string' || newObj[key] instanceof String) {
         newObj[key] = newObj[key].replace(placeholder, replacement);
       } else if (Array.isArray(newObj[key])) {
@@ -1141,26 +1153,25 @@ const replacePlaceholderInObjectValues = (oldObj, placeholder, replacement) => {
   return recurseObject(obj);
 };
 
-var styles = {"container":"_styles-module__container__vT4Ul","dropdownContainer":"_styles-module__dropdownContainer__PlA2z","dropdownList":"_styles-module__dropdownList__2yOkM","dropdownItem":"_styles-module__dropdownItem__3Licv","link":"_styles-module__link__1WyR8"};
+var styles = {"container":"_vT4Ul","dropdownContainer":"_PlA2z","dropdownList":"_2yOkM","dropdownItem":"_3Licv","link":"_1WyR8"};
 
-const AutosuggestFieldItem = ({
-  result,
-  focus,
-  index,
-  setFocus
-}) => {
-  const ref = useRef(null);
-  useEffect(() => {
+var AutosuggestFieldItem = function AutosuggestFieldItem(_ref) {
+  var result = _ref.result,
+      focus = _ref.focus,
+      index = _ref.index,
+      setFocus = _ref.setFocus;
+  var ref = useRef(null);
+  useEffect(function () {
     if (focus) {
       ref.current.focus();
     }
   }, [focus]);
 
-  const handleNavigate = () => {
+  var handleNavigate = function handleNavigate() {
     document.location = result.permalink;
   };
 
-  const handleSelect = useCallback(event => {
+  var handleSelect = useCallback(function (event) {
     if (event.key === 'Enter') {
       handleNavigate();
       return;
@@ -1171,7 +1182,7 @@ const AutosuggestFieldItem = ({
   return /*#__PURE__*/React.createElement("li", {
     tabIndex: focus ? 0 : -1,
     role: "button",
-    className: `${styles.dropdownItem} autosuggest-item`,
+    className: styles.dropdownItem + " autosuggest-item",
     ref: ref,
     onClick: handleNavigate,
     onKeyPress: handleSelect
@@ -1186,8 +1197,11 @@ AutosuggestFieldItem.propTypes = {
 };
 
 function useRoveFocus(size) {
-  const [currentFocus, setCurrentFocus] = useState(-1);
-  const handleKeyDown = useCallback(e => {
+  var _useState = useState(-1),
+      currentFocus = _useState[0],
+      setCurrentFocus = _useState[1];
+
+  var handleKeyDown = useCallback(function (e) {
     if (e.keyCode === 40) {
       e.preventDefault();
       setCurrentFocus(currentFocus === size - 1 ? -1 : currentFocus + 1);
@@ -1196,35 +1210,44 @@ function useRoveFocus(size) {
       setCurrentFocus(currentFocus === -1 ? size - 1 : currentFocus - 1);
     }
   }, [size, currentFocus, setCurrentFocus]);
-  useEffect(() => {
+  useEffect(function () {
     document.addEventListener('keydown', handleKeyDown, false);
-    return () => {
+    return function () {
       document.removeEventListener('keydown', handleKeyDown, false);
     };
   }, [handleKeyDown]);
   return [currentFocus, setCurrentFocus];
 }
 
-const AutosuggestField = ({
-  value,
-  placeholder,
-  name,
-  endpoint,
-  query,
-  hitMap,
-  minSearchCharacters,
-  numResults
-}) => {
-  const [searchValue, setSearchValue] = useState(value);
-  const [results, setResults] = useState(false);
-  const [focus, setFocus] = useRoveFocus(numResults);
-  const inputRef = useRef(null);
+var AutosuggestField = function AutosuggestField(_ref) {
+  var value = _ref.value,
+      placeholder = _ref.placeholder,
+      name = _ref.name,
+      endpoint = _ref.endpoint,
+      query = _ref.query,
+      hitMap = _ref.hitMap,
+      minSearchCharacters = _ref.minSearchCharacters,
+      numResults = _ref.numResults;
 
-  const getResults = search => {
-    let newQuery = replacePlaceholderInObjectValues(query, '%SEARCH_TERMS_PLACEHOLDER%', search);
+  var _useState = useState(value),
+      searchValue = _useState[0],
+      setSearchValue = _useState[1];
+
+  var _useState2 = useState(false),
+      results = _useState2[0],
+      setResults = _useState2[1];
+
+  var _useRoveFocus = useRoveFocus(numResults),
+      focus = _useRoveFocus[0],
+      setFocus = _useRoveFocus[1];
+
+  var inputRef = useRef(null);
+
+  var getResults = function getResults(search) {
+    var newQuery = replacePlaceholderInObjectValues(query, '%SEARCH_TERMS_PLACEHOLDER%', search);
     newQuery = replacePlaceholderInObjectValues(newQuery, '%NUM_RESULTS%', numResults);
-    post(newQuery, endpoint).then(response => {
-      let newResults = [];
+    post(newQuery, endpoint).then(function (response) {
+      var newResults = [];
 
       if (response.hits && response.hits.hits) {
         newResults = response.hits.hits.map(hitMap);
@@ -1234,7 +1257,7 @@ const AutosuggestField = ({
     });
   };
 
-  const onChange = event => {
+  var onChange = function onChange(event) {
     setSearchValue(event.target.value);
 
     if (event.target.value.length >= minSearchCharacters) {
@@ -1244,13 +1267,13 @@ const AutosuggestField = ({
     }
   };
 
-  useEffect(() => {
+  useEffect(function () {
     if (focus === -1) {
       inputRef.current.focus();
     }
   }, [focus]);
   return /*#__PURE__*/React.createElement("div", {
-    className: `${styles.container} ep-autosuggest-container`
+    className: styles.container + " ep-autosuggest-container"
   }, /*#__PURE__*/React.createElement("input", {
     onChange: onChange,
     type: "search",
@@ -1260,11 +1283,11 @@ const AutosuggestField = ({
     ref: inputRef,
     autoComplete: "off"
   }), results && results.length ? /*#__PURE__*/React.createElement("div", {
-    className: `${styles.dropdownContainer} ep-autosuggest`
+    className: styles.dropdownContainer + " ep-autosuggest"
   }, /*#__PURE__*/React.createElement("ul", {
-    className: `${styles.dropdownList} autosuggest-list`,
+    className: styles.dropdownList + " autosuggest-list",
     role: "listbox"
-  }, results.map((result, index) => {
+  }, results.map(function (result, index) {
     return /*#__PURE__*/React.createElement(AutosuggestFieldItem, {
       key: result.ID,
       setFocus: setFocus,
@@ -1275,7 +1298,7 @@ const AutosuggestField = ({
   }))) : '');
 };
 
-const query = {
+var query = {
   from: 0,
   size: '%NUM_RESULTS%',
   sort: [{
@@ -1341,8 +1364,8 @@ AutosuggestField.defaultProps = {
   value: '',
   minSearchCharacters: 3,
   numResults: 10,
-  query,
-  hitMap: hit => {
+  query: query,
+  hitMap: function hitMap(hit) {
     return hit._source;
   }
 };
@@ -1357,38 +1380,45 @@ AutosuggestField.propTypes = {
   numResults: propTypes.number
 };
 
-const RelatedContent = ({
-  query,
-  wpApiRoot,
-  numItems,
-  postId
-}) => {
-  const [results, setResults] = useState(false);
-  const [loading, setLoading] = useState(false);
+var RelatedContent = function RelatedContent(_ref) {
+  var query = _ref.query,
+      wpApiRoot = _ref.wpApiRoot,
+      numItems = _ref.numItems,
+      postId = _ref.postId;
 
-  const getResults = () => {
-    let newQuery = replacePlaceholderInObjectValues(query, '%POST_ID%', postId);
+  var _useState = useState(false),
+      results = _useState[0],
+      setResults = _useState[1];
+
+  var _useState2 = useState(false),
+      loading = _useState2[0],
+      setLoading = _useState2[1];
+
+  var getResults = function getResults() {
+    var newQuery = replacePlaceholderInObjectValues(query, '%POST_ID%', postId);
     newQuery = replacePlaceholderInObjectValues(newQuery, '%NUM_ITEMS%', numItems);
     setLoading(true);
-    get(newQuery, `${wpApiRoot}/wp/v2/posts/${postId}/related?number=${numItems}`).then(posts => {
+    get(newQuery, wpApiRoot + "/wp/v2/posts/" + postId + "/related?number=" + numItems).then(function (posts) {
       setResults(posts);
       setLoading(false);
     });
   };
 
-  useEffect(() => {
+  useEffect(function () {
     getResults();
   }, [postId, query, wpApiRoot, numItems]);
   return /*#__PURE__*/React.createElement("section", {
-    className: `ep-related-content${loading ? ' loading' : ''}`
-  }, results ? /*#__PURE__*/React.createElement("ul", null, results.map(result => /*#__PURE__*/React.createElement("li", {
-    key: result.id
-  }, /*#__PURE__*/React.createElement("a", {
-    href: result.link
-  }, result.title.rendered)))) : '');
+    className: "ep-related-content" + (loading ? ' loading' : '')
+  }, results ? /*#__PURE__*/React.createElement("ul", null, results.map(function (result) {
+    return /*#__PURE__*/React.createElement("li", {
+      key: result.id
+    }, /*#__PURE__*/React.createElement("a", {
+      href: result.link
+    }, result.title.rendered));
+  })) : '');
 };
 
-const query$1 = {
+var query$1 = {
   from: 0,
   size: '%NUM_ITEMS%',
   sort: [{
