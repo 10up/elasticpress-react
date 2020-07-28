@@ -4,10 +4,10 @@
 
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types'; /* eslint-disable-line import/no-extraneous-dependencies */
-import { post } from '../../api';
+import { get } from '../../api';
 import { replacePlaceholderInObjectValues } from '../../utils';
 
-const RelatedContent = ({ endpoint, query, hitMap, numItems, postId }) => {
+const RelatedContent = ({ query, wpApiRoot, numItems, postId }) => {
 	const [results, setResults] = useState(false);
 	const [loading, setLoading] = useState(false);
 
@@ -18,30 +18,26 @@ const RelatedContent = ({ endpoint, query, hitMap, numItems, postId }) => {
 
 		setLoading(true);
 
-		post(newQuery, endpoint).then((response) => {
-			let newResults = [];
+		get(newQuery, `${wpApiRoot}/wp/v2/posts/${postId}/related?number=${numItems}`).then(
+			(posts) => {
+				setResults(posts);
 
-			if (response.hits && response.hits.hits) {
-				newResults = response.hits.hits.map(hitMap);
-			}
-
-			setResults(newResults);
-
-			setLoading(false);
-		});
+				setLoading(false);
+			},
+		);
 	};
 
 	useEffect(() => {
 		getResults();
-	}, [postId, query, endpoint, numItems]);
+	}, [postId, query, wpApiRoot, numItems]);
 
 	return (
 		<section className={`ep-related-content${loading ? ' loading' : ''}`}>
 			{results ? (
 				<ul>
 					{results.map((result) => (
-						<li key={result.post_id}>
-							<a href={result.permalink}>{result.post_title}</a>
+						<li key={result.id}>
+							<a href={result.link}>{result.title.rendered}</a>
 						</li>
 					))}
 				</ul>
@@ -94,15 +90,12 @@ export const query = {
 RelatedContent.defaultProps = {
 	numItems: 5,
 	query,
-	hitMap: (hit) => {
-		return hit._source;
-	},
+	wpApiRoot: '/wp-json',
 };
 
 RelatedContent.propTypes = {
-	endpoint: PropTypes.string.isRequired,
 	query: PropTypes.object,
-	hitMap: PropTypes.func,
+	wpApiRoot: PropTypes.string,
 	numItems: PropTypes.number,
 	postId: PropTypes.number.isRequired,
 };

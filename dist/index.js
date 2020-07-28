@@ -1097,6 +1097,23 @@ var post = function post(data, endpoint) {
     return Promise.reject(e);
   }
 };
+var get = function get(data, endpoint) {
+  try {
+    var endpointWithParams = endpoint + "?";
+
+    if (data && Object.keys(data).length) {
+      endpointWithParams += Object.keys(data).map(function (key) {
+        return key + "=" + data[key];
+      }).join('&');
+    }
+
+    return Promise.resolve(fetch(endpointWithParams)).then(function (response) {
+      return response.json();
+    });
+  } catch (e) {
+    return Promise.reject(e);
+  }
+};
 
 var replacePlaceholderInObjectValues = function replacePlaceholderInObjectValues(oldObj, placeholder, replacement) {
   var obj = JSON.parse(JSON.stringify(oldObj));
@@ -1139,7 +1156,7 @@ var replacePlaceholderInObjectValues = function replacePlaceholderInObjectValues
   return recurseObject(obj);
 };
 
-var styles = {"container":"_vT4Ul","dropdownContainer":"_PlA2z","dropdownList":"_2yOkM","dropdownItem":"_3Licv","link":"_1WyR8"};
+var styles = {"container":"_styles-module__container__vT4Ul","dropdownContainer":"_styles-module__dropdownContainer__PlA2z","dropdownList":"_styles-module__dropdownList__2yOkM","dropdownItem":"_styles-module__dropdownItem__3Licv","link":"_styles-module__link__1WyR8"};
 
 var AutosuggestFieldItem = function AutosuggestFieldItem(_ref) {
   var result = _ref.result,
@@ -1367,9 +1384,8 @@ AutosuggestField.propTypes = {
 };
 
 var RelatedContent = function RelatedContent(_ref) {
-  var endpoint = _ref.endpoint,
-      query = _ref.query,
-      hitMap = _ref.hitMap,
+  var query = _ref.query,
+      wpApiRoot = _ref.wpApiRoot,
       numItems = _ref.numItems,
       postId = _ref.postId;
 
@@ -1385,29 +1401,23 @@ var RelatedContent = function RelatedContent(_ref) {
     var newQuery = replacePlaceholderInObjectValues(query, '%POST_ID%', postId);
     newQuery = replacePlaceholderInObjectValues(newQuery, '%NUM_ITEMS%', numItems);
     setLoading(true);
-    post(newQuery, endpoint).then(function (response) {
-      var newResults = [];
-
-      if (response.hits && response.hits.hits) {
-        newResults = response.hits.hits.map(hitMap);
-      }
-
-      setResults(newResults);
+    get(newQuery, wpApiRoot + "/wp/v2/posts/" + postId + "/related?number=" + numItems).then(function (posts) {
+      setResults(posts);
       setLoading(false);
     });
   };
 
   React.useEffect(function () {
     getResults();
-  }, [postId, query, endpoint, numItems]);
+  }, [postId, query, wpApiRoot, numItems]);
   return /*#__PURE__*/React__default.createElement("section", {
     className: "ep-related-content" + (loading ? ' loading' : '')
   }, results ? /*#__PURE__*/React__default.createElement("ul", null, results.map(function (result) {
     return /*#__PURE__*/React__default.createElement("li", {
-      key: result.post_id
+      key: result.id
     }, /*#__PURE__*/React__default.createElement("a", {
-      href: result.permalink
-    }, result.post_title));
+      href: result.link
+    }, result.title.rendered));
   })) : '');
 };
 
@@ -1447,14 +1457,11 @@ var query$1 = {
 RelatedContent.defaultProps = {
   numItems: 5,
   query: query$1,
-  hitMap: function hitMap(hit) {
-    return hit._source;
-  }
+  wpApiRoot: '/wp-json'
 };
 RelatedContent.propTypes = {
-  endpoint: propTypes.string.isRequired,
   query: propTypes.object,
-  hitMap: propTypes.func,
+  wpApiRoot: propTypes.string,
   numItems: propTypes.number,
   postId: propTypes.number.isRequired
 };

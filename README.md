@@ -33,7 +33,7 @@ const MyComponent = () => {
 		<p>Here's a search input with autosuggest:</p>
 
 		<AutosuggestField
-			endpoint="http://myelasticsearchinstance.dev/indexname/_doc/_search"
+			endpoint="https://myelasticsearchinstance.dev/indexname/_doc/_search"
 		/>
 	</>
 };
@@ -53,7 +53,7 @@ const MyComponent = () => {
 		<p>Here is some related content to post 5:</p>
 
 		<RelatedContent
-			endpoint="http://myelasticsearchinstance.dev/indexname/_doc/_search"
+			wpApiRoot="https://mysite.com/wp-json"
 			postId="5"
 		/>
 	</>
