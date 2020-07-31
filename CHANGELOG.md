@@ -4,9 +4,9 @@ All notable changes to this project will be documented in this file, per [the Ke
 
 ## [Unreleased] - TBD
 
-## [1.0.1] - TBD
+## [1.1.0] - 2020-07-28
 ### Added
 - Initial public release of ElasticPress React components.
 
 [Unreleased]: https://github.com/10up/elasticpress-react/compare/trunk...develop
-[1.0.1]: https://github.com/10up/elasticpress-react/releases/tag/1.0.1
+[1.1.0]: https://github.com/10up/elasticpress-react/releases/tag/1.1.0
