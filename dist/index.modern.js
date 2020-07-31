@@ -1077,50 +1077,38 @@ if (process.env.NODE_ENV !== 'production') {
 }
 });
 
-var post = function post(data, endpoint) {
-  try {
-    var options = {
-      method: 'POST',
-      credentials: 'same-origin',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    };
-    return Promise.resolve(fetch(endpoint, options)).then(function (response) {
-      return response.json();
-    });
-  } catch (e) {
-    return Promise.reject(e);
-  }
+const post = async (data, endpoint) => {
+  const options = {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  };
+  const response = await fetch(endpoint, options);
+  return response.json();
 };
-var get = function get(data, endpoint) {
-  try {
-    var endpointWithParams = endpoint + "?";
+const get = async (data, endpoint) => {
+  let endpointWithParams = `${endpoint}?`;
 
-    if (data && Object.keys(data).length) {
-      endpointWithParams += Object.keys(data).map(function (key) {
-        return key + "=" + data[key];
-      }).join('&');
-    }
-
-    return Promise.resolve(fetch(endpointWithParams)).then(function (response) {
-      return response.json();
-    });
-  } catch (e) {
-    return Promise.reject(e);
+  if (data && Object.keys(data).length) {
+    endpointWithParams += Object.keys(data).map(key => `${key}=${data[key]}`).join('&');
   }
+
+  const response = await fetch(endpointWithParams);
+  return response.json();
 };
 
-var replacePlaceholderInObjectValues = function replacePlaceholderInObjectValues(oldObj, placeholder, replacement) {
-  var obj = JSON.parse(JSON.stringify(oldObj));
+const replacePlaceholderInObjectValues = (oldObj, placeholder, replacement) => {
+  const obj = JSON.parse(JSON.stringify(oldObj));
 
-  var isPlainObject = function isPlainObject(something) {
+  const isPlainObject = something => {
     return Object.prototype.toString.call(something) === '[object Object]';
   };
 
-  var recurseArray = function recurseArray(arr) {
-    return arr.map(function (value) {
+  const recurseArray = arr => {
+    return arr.map(value => {
       if (Array.isArray(value)) {
         return recurseArray(value);
       }
@@ -1137,8 +1125,8 @@ var replacePlaceholderInObjectValues = function replacePlaceholderInObjectValues
     });
   };
 
-  var recurseObject = function recurseObject(newObj) {
-    Object.keys(newObj).forEach(function (key) {
+  const recurseObject = newObj => {
+    Object.keys(newObj).forEach(key => {
       if (typeof newObj[key] === 'string' || newObj[key] instanceof String) {
         newObj[key] = newObj[key].replace(placeholder, replacement);
       } else if (Array.isArray(newObj[key])) {
@@ -1153,25 +1141,26 @@ var replacePlaceholderInObjectValues = function replacePlaceholderInObjectValues
   return recurseObject(obj);
 };
 
-var styles = {"container":"_vT4Ul","dropdownContainer":"_PlA2z","dropdownList":"_2yOkM","dropdownItem":"_3Licv","link":"_1WyR8"};
+var styles = {"container":"_styles-module__container__vT4Ul","dropdownContainer":"_styles-module__dropdownContainer__PlA2z","dropdownList":"_styles-module__dropdownList__2yOkM","dropdownItem":"_styles-module__dropdownItem__3Licv","link":"_styles-module__link__1WyR8"};
 
-var AutosuggestFieldItem = function AutosuggestFieldItem(_ref) {
-  var result = _ref.result,
-      focus = _ref.focus,
-      index = _ref.index,
-      setFocus = _ref.setFocus;
-  var ref = useRef(null);
-  useEffect(function () {
+const AutosuggestFieldItem = ({
+  result,
+  focus,
+  index,
+  setFocus
+}) => {
+  const ref = useRef(null);
+  useEffect(() => {
     if (focus) {
       ref.current.focus();
     }
   }, [focus]);
 
-  var handleNavigate = function handleNavigate() {
+  const handleNavigate = () => {
     document.location = result.permalink;
   };
 
-  var handleSelect = useCallback(function (event) {
+  const handleSelect = useCallback(event => {
     if (event.key === 'Enter') {
       handleNavigate();
       return;
@@ -1182,7 +1171,7 @@ var AutosuggestFieldItem = function AutosuggestFieldItem(_ref) {
   return /*#__PURE__*/React.createElement("li", {
     tabIndex: focus ? 0 : -1,
     role: "button",
-    className: styles.dropdownItem + " autosuggest-item",
+    className: `${styles.dropdownItem} autosuggest-item`,
     ref: ref,
     onClick: handleNavigate,
     onKeyPress: handleSelect
@@ -1197,11 +1186,8 @@ AutosuggestFieldItem.propTypes = {
 };
 
 function useRoveFocus(size) {
-  var _useState = useState(-1),
-      currentFocus = _useState[0],
-      setCurrentFocus = _useState[1];
-
-  var handleKeyDown = useCallback(function (e) {
+  const [currentFocus, setCurrentFocus] = useState(-1);
+  const handleKeyDown = useCallback(e => {
     if (e.keyCode === 40) {
       e.preventDefault();
       setCurrentFocus(currentFocus === size - 1 ? -1 : currentFocus + 1);
@@ -1210,44 +1196,35 @@ function useRoveFocus(size) {
       setCurrentFocus(currentFocus === -1 ? size - 1 : currentFocus - 1);
     }
   }, [size, currentFocus, setCurrentFocus]);
-  useEffect(function () {
+  useEffect(() => {
     document.addEventListener('keydown', handleKeyDown, false);
-    return function () {
+    return () => {
       document.removeEventListener('keydown', handleKeyDown, false);
     };
   }, [handleKeyDown]);
   return [currentFocus, setCurrentFocus];
 }
 
-var AutosuggestField = function AutosuggestField(_ref) {
-  var value = _ref.value,
-      placeholder = _ref.placeholder,
-      name = _ref.name,
-      endpoint = _ref.endpoint,
-      query = _ref.query,
-      hitMap = _ref.hitMap,
-      minSearchCharacters = _ref.minSearchCharacters,
-      numResults = _ref.numResults;
+const AutosuggestField = ({
+  value,
+  placeholder,
+  name,
+  endpoint,
+  query,
+  hitMap,
+  minSearchCharacters,
+  numResults
+}) => {
+  const [searchValue, setSearchValue] = useState(value);
+  const [results, setResults] = useState(false);
+  const [focus, setFocus] = useRoveFocus(numResults);
+  const inputRef = useRef(null);
 
-  var _useState = useState(value),
-      searchValue = _useState[0],
-      setSearchValue = _useState[1];
-
-  var _useState2 = useState(false),
-      results = _useState2[0],
-      setResults = _useState2[1];
-
-  var _useRoveFocus = useRoveFocus(numResults),
-      focus = _useRoveFocus[0],
-      setFocus = _useRoveFocus[1];
-
-  var inputRef = useRef(null);
-
-  var getResults = function getResults(search) {
-    var newQuery = replacePlaceholderInObjectValues(query, '%SEARCH_TERMS%', search);
+  const getResults = search => {
+    let newQuery = replacePlaceholderInObjectValues(query, '%SEARCH_TERMS%', search);
     newQuery = replacePlaceholderInObjectValues(newQuery, '%NUM_RESULTS%', numResults);
-    post(newQuery, endpoint).then(function (response) {
-      var newResults = [];
+    post(newQuery, endpoint).then(response => {
+      let newResults = [];
 
       if (response.hits && response.hits.hits) {
         newResults = response.hits.hits.map(hitMap);
@@ -1257,7 +1234,7 @@ var AutosuggestField = function AutosuggestField(_ref) {
     });
   };
 
-  var onChange = function onChange(event) {
+  const onChange = event => {
     setSearchValue(event.target.value);
 
     if (event.target.value.length >= minSearchCharacters) {
@@ -1267,13 +1244,13 @@ var AutosuggestField = function AutosuggestField(_ref) {
     }
   };
 
-  useEffect(function () {
+  useEffect(() => {
     if (focus === -1) {
       inputRef.current.focus();
     }
   }, [focus]);
   return /*#__PURE__*/React.createElement("div", {
-    className: styles.container + " ep-autosuggest-container"
+    className: `${styles.container} ep-autosuggest-container`
   }, /*#__PURE__*/React.createElement("input", {
     onChange: onChange,
     type: "search",
@@ -1283,11 +1260,11 @@ var AutosuggestField = function AutosuggestField(_ref) {
     ref: inputRef,
     autoComplete: "off"
   }), results && results.length ? /*#__PURE__*/React.createElement("div", {
-    className: styles.dropdownContainer + " ep-autosuggest"
+    className: `${styles.dropdownContainer} ep-autosuggest`
   }, /*#__PURE__*/React.createElement("ul", {
-    className: styles.dropdownList + " autosuggest-list",
+    className: `${styles.dropdownList} autosuggest-list`,
     role: "listbox"
-  }, results.map(function (result, index) {
+  }, results.map((result, index) => {
     return /*#__PURE__*/React.createElement(AutosuggestFieldItem, {
       key: result.ID,
       setFocus: setFocus,
@@ -1298,7 +1275,7 @@ var AutosuggestField = function AutosuggestField(_ref) {
   }))) : '');
 };
 
-var query = {
+const query = {
   from: 0,
   size: '%NUM_RESULTS%',
   sort: [{
@@ -1364,8 +1341,8 @@ AutosuggestField.defaultProps = {
   value: '',
   minSearchCharacters: 3,
   numResults: 10,
-  query: query,
-  hitMap: function hitMap(hit) {
+  query,
+  hitMap: hit => {
     return hit._source;
   }
 };
@@ -1380,45 +1357,38 @@ AutosuggestField.propTypes = {
   numResults: propTypes.number
 };
 
-var RelatedContent = function RelatedContent(_ref) {
-  var query = _ref.query,
-      wpApiRoot = _ref.wpApiRoot,
-      numItems = _ref.numItems,
-      postId = _ref.postId;
+const RelatedContent = ({
+  query,
+  wpApiRoot,
+  numItems,
+  postId
+}) => {
+  const [results, setResults] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  var _useState = useState(false),
-      results = _useState[0],
-      setResults = _useState[1];
-
-  var _useState2 = useState(false),
-      loading = _useState2[0],
-      setLoading = _useState2[1];
-
-  var getResults = function getResults() {
-    var newQuery = replacePlaceholderInObjectValues(query, '%POST_ID%', postId);
+  const getResults = () => {
+    let newQuery = replacePlaceholderInObjectValues(query, '%POST_ID%', postId);
     newQuery = replacePlaceholderInObjectValues(newQuery, '%NUM_ITEMS%', numItems);
     setLoading(true);
-    get(newQuery, wpApiRoot + "/wp/v2/posts/" + postId + "/related?number=" + numItems).then(function (posts) {
+    get(newQuery, `${wpApiRoot}/wp/v2/posts/${postId}/related?number=${numItems}`).then(posts => {
       setResults(posts);
       setLoading(false);
     });
   };
 
-  useEffect(function () {
+  useEffect(() => {
     getResults();
   }, [postId, query, wpApiRoot, numItems]);
   return /*#__PURE__*/React.createElement("section", {
-    className: "ep-related-content" + (loading ? ' loading' : '')
-  }, results ? /*#__PURE__*/React.createElement("ul", null, results.map(function (result) {
-    return /*#__PURE__*/React.createElement("li", {
-      key: result.id
-    }, /*#__PURE__*/React.createElement("a", {
-      href: result.link
-    }, result.title.rendered));
-  })) : '');
+    className: `ep-related-content${loading ? ' loading' : ''}`
+  }, results ? /*#__PURE__*/React.createElement("ul", null, results.map(result => /*#__PURE__*/React.createElement("li", {
+    key: result.id
+  }, /*#__PURE__*/React.createElement("a", {
+    href: result.link
+  }, result.title.rendered)))) : '');
 };
 
-var query$1 = {
+const query$1 = {
   from: 0,
   size: '%NUM_ITEMS%',
   sort: [{
@@ -1463,54 +1433,33 @@ RelatedContent.propTypes = {
   postId: propTypes.number.isRequired
 };
 
-function _extends() {
-  _extends = Object.assign || function (target) {
-    for (var i = 1; i < arguments.length; i++) {
-      var source = arguments[i];
-
-      for (var key in source) {
-        if (Object.prototype.hasOwnProperty.call(source, key)) {
-          target[key] = source[key];
-        }
-      }
-    }
-
-    return target;
-  };
-
-  return _extends.apply(this, arguments);
-}
-
-var PostContext = createContext();
-var initialState = {
+const PostContext = createContext();
+const initialState = {
   posts: null,
   loading: false
 };
 
-var reducer = function reducer(state, action) {
+const reducer = (state, action) => {
   switch (action.type) {
     case 'set_posts':
-      return _extends({}, state, {
+      return { ...state,
         posts: action.payload
-      });
+      };
 
     case 'set_loading':
-      return _extends({}, state, {
+      return { ...state,
         loading: action.payload
-      });
+      };
 
     default:
       throw new Error();
   }
 };
 
-var PostContextProvider = function PostContextProvider(_ref) {
-  var children = _ref.children;
-
-  var _useReducer = useReducer(reducer, initialState),
-      state = _useReducer[0],
-      dispatch = _useReducer[1];
-
+const PostContextProvider = ({
+  children
+}) => {
+  const [state, dispatch] = useReducer(reducer, initialState);
   return /*#__PURE__*/React.createElement(PostContext.Provider, {
     value: [state, dispatch]
   }, children);
@@ -1520,24 +1469,20 @@ PostContextProvider.propTypes = {
   children: propTypes.node.isRequired
 };
 
-var SearchField = function SearchField(_ref) {
-  var placeholder = _ref.placeholder,
-      value = _ref.value,
-      name = _ref.name,
-      minSearchCharacters = _ref.minSearchCharacters,
-      perPage = _ref.perPage,
-      query = _ref.query,
-      endpoint = _ref.endpoint,
-      hitMap = _ref.hitMap;
+const SearchField = ({
+  placeholder,
+  value,
+  name,
+  minSearchCharacters,
+  perPage,
+  query,
+  endpoint,
+  hitMap
+}) => {
+  const [searchValue, setSearchValue] = useState(value);
+  const [, dispatch] = useContext(PostContext);
 
-  var _useState = useState(value),
-      searchValue = _useState[0],
-      setSearchValue = _useState[1];
-
-  var _useContext = useContext(PostContext),
-      dispatch = _useContext[1];
-
-  var onChange = function onChange(event) {
+  const onChange = event => {
     setSearchValue(event.target.value);
 
     if (event.target.value.length >= minSearchCharacters) {
@@ -1545,10 +1490,10 @@ var SearchField = function SearchField(_ref) {
         type: 'set_loading',
         payload: true
       });
-      var newQuery = replacePlaceholderInObjectValues(query, '%SEARCH_TERMS%', event.target.value);
+      let newQuery = replacePlaceholderInObjectValues(query, '%SEARCH_TERMS%', event.target.value);
       newQuery = replacePlaceholderInObjectValues(newQuery, '%PER_PAGE%', perPage);
-      post(newQuery, endpoint).then(function (response) {
-        var newResults = [];
+      post(newQuery, endpoint).then(response => {
+        let newResults = [];
 
         if (response.hits && response.hits.hits) {
           newResults = response.hits.hits.map(hitMap);
@@ -1557,6 +1502,10 @@ var SearchField = function SearchField(_ref) {
         dispatch({
           type: 'set_posts',
           payload: newResults
+        });
+        dispatch({
+          type: 'set_loading',
+          payload: false
         });
       });
     } else {
@@ -1577,7 +1526,7 @@ var SearchField = function SearchField(_ref) {
   });
 };
 
-var query$2 = {
+const query$2 = {
   from: 0,
   size: '%PER_PAGE%',
   sort: [{
@@ -1644,7 +1593,7 @@ SearchField.defaultProps = {
   minSearchCharacters: 3,
   perPage: 10,
   query: query$2,
-  hitMap: function hitMap(hit) {
+  hitMap: hit => {
     return hit._source;
   }
 };
@@ -1659,8 +1608,9 @@ SearchField.propTypes = {
   hitMap: propTypes.func
 };
 
-var PostItem = function PostItem(_ref) {
-  var post = _ref.post;
+const PostItem = ({
+  post
+}) => {
   return /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
     href: post.permalink
   }, post.post_title));
@@ -1670,16 +1620,14 @@ PostItem.propTypes = {
   post: propTypes.object.isRequired
 };
 
-var Posts = function Posts(_ref) {
-  var PostItemComponent = _ref.PostItemComponent,
-      noPostsFoundMessage = _ref.noPostsFoundMessage;
-
-  var _useContext = useContext(PostContext),
-      state = _useContext[0];
-
+const Posts = ({
+  PostItemComponent,
+  noPostsFoundMessage
+}) => {
+  const [state] = useContext(PostContext);
   return /*#__PURE__*/React.createElement("section", {
-    className: "ep-posts" + (state.loading ? ' loading' : '')
-  }, !state.loading && state.posts && state.posts.length ? /*#__PURE__*/React.createElement("ul", null, state.posts.map(function (post) {
+    className: `ep-posts${state.loading ? ' loading' : ''}`
+  }, !state.loading && state.posts && state.posts.length ? /*#__PURE__*/React.createElement("ul", null, state.posts.map(post => {
     return /*#__PURE__*/React.createElement(PostItemComponent, {
       key: post.ID,
       post: post

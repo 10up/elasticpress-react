@@ -49,6 +49,11 @@ const SearchField = ({
 					type: 'set_posts',
 					payload: newResults,
 				});
+
+				dispatch({
+					type: 'set_loading',
+					payload: false,
+				});
 			});
 		} else {
 			dispatch({
