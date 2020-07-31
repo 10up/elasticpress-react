@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useCallback, useState } from 'react';
+import React, { useRef, useEffect, useCallback, useState, createContext, useReducer, useContext } from 'react';
 
 function createCommonjsModule(fn, module) {
 	return module = { exports: {} }, fn(module, module.exports), module.exports;
@@ -1244,7 +1244,7 @@ var AutosuggestField = function AutosuggestField(_ref) {
   var inputRef = useRef(null);
 
   var getResults = function getResults(search) {
-    var newQuery = replacePlaceholderInObjectValues(query, '%SEARCH_TERMS_PLACEHOLDER%', search);
+    var newQuery = replacePlaceholderInObjectValues(query, '%SEARCH_TERMS%', search);
     newQuery = replacePlaceholderInObjectValues(newQuery, '%NUM_RESULTS%', numResults);
     post(newQuery, endpoint).then(function (response) {
       var newResults = [];
@@ -1314,14 +1314,14 @@ var query = {
             bool: {
               should: [{
                 multi_match: {
-                  query: '%SEARCH_TERMS_PLACEHOLDER%',
+                  query: '%SEARCH_TERMS%',
                   type: 'phrase',
                   fields: ['post_title^8', 'post_excerpt^1', 'post_content^1', 'terms.ep_custom_result.name^9999'],
                   boost: 4
                 }
               }, {
                 multi_match: {
-                  query: '%SEARCH_TERMS_PLACEHOLDER%',
+                  query: '%SEARCH_TERMS%',
                   fields: ['post_title^8', 'post_excerpt^1', 'post_content^1', 'terms.ep_custom_result.name^9999'],
                   type: 'phrase',
                   slop: 5
@@ -1463,5 +1463,238 @@ RelatedContent.propTypes = {
   postId: propTypes.number.isRequired
 };
 
-export { AutosuggestField, RelatedContent };
+function _extends() {
+  _extends = Object.assign || function (target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = arguments[i];
+
+      for (var key in source) {
+        if (Object.prototype.hasOwnProperty.call(source, key)) {
+          target[key] = source[key];
+        }
+      }
+    }
+
+    return target;
+  };
+
+  return _extends.apply(this, arguments);
+}
+
+var PostContext = createContext();
+var initialState = {
+  posts: null,
+  loading: false
+};
+
+var reducer = function reducer(state, action) {
+  switch (action.type) {
+    case 'set_posts':
+      return _extends({}, state, {
+        posts: action.payload
+      });
+
+    case 'set_loading':
+      return _extends({}, state, {
+        loading: action.payload
+      });
+
+    default:
+      throw new Error();
+  }
+};
+
+var PostContextProvider = function PostContextProvider(_ref) {
+  var children = _ref.children;
+
+  var _useReducer = useReducer(reducer, initialState),
+      state = _useReducer[0],
+      dispatch = _useReducer[1];
+
+  return /*#__PURE__*/React.createElement(PostContext.Provider, {
+    value: [state, dispatch]
+  }, children);
+};
+
+PostContextProvider.propTypes = {
+  children: propTypes.node.isRequired
+};
+
+var SearchField = function SearchField(_ref) {
+  var placeholder = _ref.placeholder,
+      value = _ref.value,
+      name = _ref.name,
+      minSearchCharacters = _ref.minSearchCharacters,
+      perPage = _ref.perPage,
+      query = _ref.query,
+      endpoint = _ref.endpoint,
+      hitMap = _ref.hitMap;
+
+  var _useState = useState(value),
+      searchValue = _useState[0],
+      setSearchValue = _useState[1];
+
+  var _useContext = useContext(PostContext),
+      dispatch = _useContext[1];
+
+  var onChange = function onChange(event) {
+    setSearchValue(event.target.value);
+
+    if (event.target.value.length >= minSearchCharacters) {
+      dispatch({
+        type: 'set_loading',
+        payload: true
+      });
+      var newQuery = replacePlaceholderInObjectValues(query, '%SEARCH_TERMS%', event.target.value);
+      newQuery = replacePlaceholderInObjectValues(newQuery, '%PER_PAGE%', perPage);
+      post(newQuery, endpoint).then(function (response) {
+        var newResults = [];
+
+        if (response.hits && response.hits.hits) {
+          newResults = response.hits.hits.map(hitMap);
+        }
+
+        dispatch({
+          type: 'set_posts',
+          payload: newResults
+        });
+      });
+    } else {
+      dispatch({
+        type: 'set_posts',
+        payload: null
+      });
+    }
+  };
+
+  return /*#__PURE__*/React.createElement("input", {
+    type: "search",
+    className: "search-field",
+    placeholder: placeholder,
+    value: searchValue,
+    name: name,
+    onChange: onChange
+  });
+};
+
+var query$2 = {
+  from: 0,
+  size: '%PER_PAGE%',
+  sort: [{
+    _score: {
+      order: 'desc'
+    }
+  }],
+  query: {
+    function_score: {
+      query: {
+        bool: {
+          should: [{
+            bool: {
+              should: [{
+                multi_match: {
+                  query: '%SEARCH_TERMS%',
+                  type: 'phrase',
+                  fields: ['post_title^8', 'post_excerpt^1', 'post_content^1', 'terms.ep_custom_result.name^9999'],
+                  boost: 4
+                }
+              }, {
+                multi_match: {
+                  query: '%SEARCH_TERMS%',
+                  fields: ['post_title^8', 'post_excerpt^1', 'post_content^1', 'terms.ep_custom_result.name^9999'],
+                  type: 'phrase',
+                  slop: 5
+                }
+              }]
+            }
+          }]
+        }
+      },
+      functions: [{
+        exp: {
+          post_date_gmt: {
+            scale: '14d',
+            decay: 0.25,
+            offset: '7d'
+          }
+        }
+      }],
+      score_mode: 'avg',
+      boost_mode: 'sum'
+    }
+  },
+  post_filter: {
+    bool: {
+      must: [{
+        terms: {
+          'post_type.raw': ['post', 'page']
+        }
+      }, {
+        term: {
+          post_status: 'publish'
+        }
+      }]
+    }
+  }
+};
+SearchField.defaultProps = {
+  name: 's',
+  placeholder: 'Search...',
+  value: '',
+  minSearchCharacters: 3,
+  perPage: 10,
+  query: query$2,
+  hitMap: function hitMap(hit) {
+    return hit._source;
+  }
+};
+SearchField.propTypes = {
+  name: propTypes.string,
+  value: propTypes.string,
+  placeholder: propTypes.string,
+  endpoint: propTypes.string.isRequired,
+  query: propTypes.object,
+  minSearchCharacters: propTypes.number,
+  perPage: propTypes.number,
+  hitMap: propTypes.func
+};
+
+var PostItem = function PostItem(_ref) {
+  var post = _ref.post;
+  return /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
+    href: post.permalink
+  }, post.post_title));
+};
+
+PostItem.propTypes = {
+  post: propTypes.object.isRequired
+};
+
+var Posts = function Posts(_ref) {
+  var PostItemComponent = _ref.PostItemComponent,
+      noPostsFoundMessage = _ref.noPostsFoundMessage;
+
+  var _useContext = useContext(PostContext),
+      state = _useContext[0];
+
+  return /*#__PURE__*/React.createElement("section", {
+    className: "ep-posts" + (state.loading ? ' loading' : '')
+  }, !state.loading && state.posts && state.posts.length ? /*#__PURE__*/React.createElement("ul", null, state.posts.map(function (post) {
+    return /*#__PURE__*/React.createElement(PostItemComponent, {
+      key: post.ID,
+      post: post
+    });
+  })) : '', !state.loading && state.posts && !state.posts.length ? /*#__PURE__*/React.createElement("p", null, noPostsFoundMessage) : '');
+};
+
+Posts.defaultProps = {
+  PostItemComponent: PostItem,
+  noPostsFoundMessage: 'No posts found.'
+};
+Posts.propTypes = {
+  PostItemComponent: propTypes.func,
+  noPostsFoundMessage: propTypes.string
+};
+
+export { AutosuggestField, PostContext, PostContextProvider, Posts, RelatedContent, SearchField };
 //# sourceMappingURL=index.modern.js.map

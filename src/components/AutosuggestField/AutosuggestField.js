@@ -26,11 +26,7 @@ const AutosuggestField = ({
 	const inputRef = useRef(null);
 
 	const getResults = (search) => {
-		let newQuery = replacePlaceholderInObjectValues(
-			query,
-			'%SEARCH_TERMS_PLACEHOLDER%',
-			search,
-		);
+		let newQuery = replacePlaceholderInObjectValues(query, '%SEARCH_TERMS%', search);
 
 		newQuery = replacePlaceholderInObjectValues(newQuery, '%NUM_RESULTS%', numResults);
 
@@ -116,7 +112,7 @@ export const query = {
 								should: [
 									{
 										multi_match: {
-											query: '%SEARCH_TERMS_PLACEHOLDER%',
+											query: '%SEARCH_TERMS%',
 											type: 'phrase',
 											fields: [
 												'post_title^8',
@@ -129,7 +125,7 @@ export const query = {
 									},
 									{
 										multi_match: {
-											query: '%SEARCH_TERMS_PLACEHOLDER%',
+											query: '%SEARCH_TERMS%',
 											fields: [
 												'post_title^8',
 												'post_excerpt^1',
