@@ -41,6 +41,8 @@ const MyComponent = () => {
 };
 ```
 
+![Autosuggest screenshot](/screenshots/autosuggest.jpg?raw=true)
+
 ### Related Content
 
 This component outputs content related to a post.
