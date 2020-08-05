@@ -1433,99 +1433,6 @@ RelatedContent.propTypes = {
   postId: propTypes.number.isRequired
 };
 
-const PostContext = createContext();
-const initialState = {
-  posts: null,
-  loading: false
-};
-
-const reducer = (state, action) => {
-  switch (action.type) {
-    case 'set_posts':
-      return { ...state,
-        posts: action.payload
-      };
-
-    case 'set_loading':
-      return { ...state,
-        loading: action.payload
-      };
-
-    default:
-      throw new Error();
-  }
-};
-
-const PostContextProvider = ({
-  children
-}) => {
-  const [state, dispatch] = useReducer(reducer, initialState);
-  return /*#__PURE__*/React.createElement(PostContext.Provider, {
-    value: [state, dispatch]
-  }, children);
-};
-
-PostContextProvider.propTypes = {
-  children: propTypes.node.isRequired
-};
-
-const SearchField = ({
-  placeholder,
-  value,
-  name,
-  minSearchCharacters,
-  perPage,
-  query,
-  endpoint,
-  hitMap
-}) => {
-  const [searchValue, setSearchValue] = useState(value);
-  const [, dispatch] = useContext(PostContext);
-
-  const onChange = event => {
-    setSearchValue(event.target.value);
-
-    if (event.target.value.length >= minSearchCharacters) {
-      dispatch({
-        type: 'set_loading',
-        payload: true
-      });
-      let newQuery = replacePlaceholderInObjectValues(query, '%SEARCH_TERMS%', event.target.value);
-      newQuery = replacePlaceholderInObjectValues(newQuery, '%PER_PAGE%', perPage);
-      post(newQuery, endpoint).then(response => {
-        let newResults = [];
-
-        if (response.hits && response.hits.hits) {
-          newResults = response.hits.hits.map(hitMap);
-        }
-
-        dispatch({
-          type: 'set_posts',
-          payload: newResults
-        });
-        dispatch({
-          type: 'set_loading',
-          payload: false
-        });
-      });
-    } else {
-      dispatch({
-        type: 'set_posts',
-        payload: null
-      });
-    }
-  };
-
-  return /*#__PURE__*/React.createElement("input", {
-    type: "search",
-    className: "search-field",
-    placeholder: placeholder,
-    value: searchValue,
-    name: name,
-    onChange: onChange
-  });
-};
-
 const query$2 = {
   from: 0,
   size: '%PER_PAGE%',
@@ -1586,26 +1493,160 @@ const query$2 = {
     }
   }
 };
-SearchField.defaultProps = {
-  name: 's',
-  placeholder: 'Search...',
-  value: '',
-  minSearchCharacters: 3,
+
+const PostContext = createContext();
+let initialState = {
+  results: null,
+  searchTerms: null,
+  perPage: 10,
+  offset: 0,
+  totalResults: null,
+  loading: false,
+  query: null,
+  hitMap: null,
+  endpoint: null
+};
+
+const reducer = (state, action) => {
+  switch (action.type) {
+    case 'set_results':
+      return { ...state,
+        ...action.payload
+      };
+
+    case 'set_loading':
+      return { ...state,
+        loading: action.payload
+      };
+
+    case 'set_search_terms':
+      return { ...state,
+        searchTerms: action.payload
+      };
+
+    default:
+      throw new Error();
+  }
+};
+
+const PostContextProvider = ({
+  children,
+  endpoint,
+  hitMap,
+  query,
+  perPage
+}) => {
+  initialState = { ...initialState,
+    endpoint,
+    hitMap,
+    query,
+    perPage
+  };
+  const [state, dispatch] = useReducer(reducer, initialState);
+  return /*#__PURE__*/React.createElement(PostContext.Provider, {
+    value: [state, dispatch]
+  }, children);
+};
+
+PostContextProvider.propTypes = {
+  children: propTypes.node.isRequired,
+  perPage: propTypes.number,
+  hitMap: propTypes.func,
+  query: propTypes.object,
+  endpoint: propTypes.string.isRequired
+};
+PostContextProvider.defaultProps = {
   perPage: 10,
   query: query$2,
   hitMap: hit => {
     return hit._source;
   }
 };
+
+const SearchField = ({
+  placeholder,
+  value,
+  name,
+  minSearchCharacters
+}) => {
+  const [searchValue, setSearchValue] = useState(value);
+  const [state, dispatch] = useContext(PostContext);
+
+  const onChange = event => {
+    const searchTerms = event.target.value;
+    setSearchValue(searchTerms);
+    dispatch({
+      type: 'set_search_terms',
+      payload: searchTerms
+    });
+
+    if (searchTerms.length >= minSearchCharacters) {
+      dispatch({
+        type: 'set_loading',
+        payload: true
+      });
+      let newQuery = replacePlaceholderInObjectValues(state.query, '%SEARCH_TERMS%', searchTerms);
+      newQuery = replacePlaceholderInObjectValues(newQuery, '%PER_PAGE%', state.perPage);
+      post(newQuery, state.endpoint).then(response => {
+        let newResults = [];
+        let totalResults = 0;
+
+        if (response.hits && response.hits.hits) {
+          if (response.hits.total && response.hits.total.value) {
+            totalResults = parseInt(response.hits.total.value, 10);
+          }
+
+          newResults = response.hits.hits.map(state.hitMap);
+        }
+
+        dispatch({
+          type: 'set_results',
+          payload: {
+            results: newResults,
+            totalResults,
+            offset: state.perPage,
+            searchTerms
+          }
+        });
+        dispatch({
+          type: 'set_loading',
+          payload: false
+        });
+      });
+    } else {
+      dispatch({
+        type: 'set_results',
+        payload: {
+          results: null,
+          offset: 0,
+          totalResults: null,
+          searchTerms
+        }
+      });
+    }
+  };
+
+  return /*#__PURE__*/React.createElement("input", {
+    type: "search",
+    className: "search-field",
+    placeholder: placeholder,
+    value: searchValue,
+    name: name,
+    onChange: onChange
+  });
+};
+
+SearchField.defaultProps = {
+  name: 's',
+  placeholder: 'Search...',
+  value: '',
+  minSearchCharacters: 3
+};
 SearchField.propTypes = {
   name: propTypes.string,
   value: propTypes.string,
   placeholder: propTypes.string,
-  endpoint: propTypes.string.isRequired,
-  query: propTypes.object,
-  minSearchCharacters: propTypes.number,
-  perPage: propTypes.number,
-  hitMap: propTypes.func
+  minSearchCharacters: propTypes.number
 };
 
 const PostItem = ({
@@ -1620,27 +1661,87 @@ PostItem.propTypes = {
   post: propTypes.object.isRequired
 };
 
+var styles$1 = {"button":"_load-more-module__button__2yhed"};
+
+const LoadMore = ({
+  buttonText
+}) => {
+  const [state, dispatch] = useContext(PostContext);
+
+  const handleLoadMore = () => {
+    dispatch({
+      type: 'set_loading',
+      payload: true
+    });
+    let newQuery = replacePlaceholderInObjectValues(state.query, '%SEARCH_TERMS%', state.searchTerms);
+    newQuery = replacePlaceholderInObjectValues(newQuery, '%PER_PAGE%', state.perPage);
+    newQuery.from = state.offset;
+    post(newQuery, state.endpoint).then(response => {
+      let newResults = [];
+      let totalResults = 0;
+
+      if (response.hits && response.hits.hits) {
+        if (response.hits.total && response.hits.total.value) {
+          totalResults = parseInt(response.hits.total.value, 10);
+        }
+
+        newResults = response.hits.hits.map(state.hitMap);
+      }
+
+      dispatch({
+        type: 'set_results',
+        payload: {
+          results: state.results.concat(newResults),
+          totalResults,
+          offset: state.offset + state.perPage
+        }
+      });
+      dispatch({
+        type: 'set_loading',
+        payload: false
+      });
+    });
+  };
+
+  return /*#__PURE__*/React.createElement("button", {
+    className: `${styles$1.button} ep-load-more`,
+    onClick: handleLoadMore,
+    type: "button"
+  }, buttonText);
+};
+
+LoadMore.defaultProps = {
+  buttonText: 'Load More'
+};
+LoadMore.propTypes = {
+  buttonText: propTypes.string
+};
+
 const Posts = ({
   PostItemComponent,
-  noPostsFoundMessage
+  noPostsFoundMessage,
+  LoadMoreComponent
 }) => {
   const [state] = useContext(PostContext);
   return /*#__PURE__*/React.createElement("section", {
     className: `ep-posts${state.loading ? ' loading' : ''}`
-  }, !state.loading && state.posts && state.posts.length ? /*#__PURE__*/React.createElement("ul", null, state.posts.map(post => {
+  }, !state.loading && state.results && state.results.length ? /*#__PURE__*/React.createElement("ul", null, state.results.map(post => {
+    console.log(post);
     return /*#__PURE__*/React.createElement(PostItemComponent, {
       key: post.ID,
       post: post
     });
-  })) : '', !state.loading && state.posts && !state.posts.length ? /*#__PURE__*/React.createElement("p", null, noPostsFoundMessage) : '');
+  })) : '', !state.loading && state.results && !state.results.length ? /*#__PURE__*/React.createElement("p", null, noPostsFoundMessage) : '', !state.loading && state.results && state.results.length < state.totalResults ? /*#__PURE__*/React.createElement(LoadMoreComponent, null) : '');
 };
 
 Posts.defaultProps = {
   PostItemComponent: PostItem,
+  LoadMoreComponent: LoadMore,
   noPostsFoundMessage: 'No posts found.'
 };
 Posts.propTypes = {
   PostItemComponent: propTypes.func,
+  LoadMoreComponent: propTypes.func,
   noPostsFoundMessage: propTypes.string
 };
 

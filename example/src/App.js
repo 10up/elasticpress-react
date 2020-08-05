@@ -18,10 +18,10 @@ const App = () => {
 			<RelatedContent wpApiRoot="http://elasticpress.test/wp-json" postId={2738} />
 
 			<h2>Search</h2>
-			<PostContextProvider>
+			<PostContextProvider endpoint="http://elasticpress.test/__elasticsearch/elasticpresstest-post-1/_doc/_search">
 				<>
 					<div>
-						<SearchField endpoint="http://elasticpress.test/__elasticsearch/elasticpresstest-post-1/_doc/_search" />
+						<SearchField />
 					</div>
 
 					<div>

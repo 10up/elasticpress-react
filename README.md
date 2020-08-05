@@ -75,12 +75,12 @@ import { PostContextProvider, SearchField, Posts } from '@10up/elasticpress-reac
 
 const MyComponent = () => {
 	// Make sure to wrap your components with the provider.
-	<PostContextProvider>
+	<PostContextProvider perPage="10" endpoint="http://elasticpress.test/__elasticsearch/elasticpresstest-post-1/_doc/_search">
 		<>
 			{ /* This is the search field input. */ }
-			<SearchField endpoint="http://elasticpress.test/__elasticsearch/elasticpresstest-post-1/_doc/_search" />
+			<SearchField />
 
-			{ /* This is the posts river. */ }
+			{ /* This is the posts river. It will show a load more button if more than perPage posts. */ }
 			<Posts />
 		</>
 	</PostContextProvider>

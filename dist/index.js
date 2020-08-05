@@ -1484,106 +1484,6 @@ function _extends() {
   return _extends.apply(this, arguments);
 }
 
-var PostContext = React.createContext();
-var initialState = {
-  posts: null,
-  loading: false
-};
-
-var reducer = function reducer(state, action) {
-  switch (action.type) {
-    case 'set_posts':
-      return _extends({}, state, {
-        posts: action.payload
-      });
-
-    case 'set_loading':
-      return _extends({}, state, {
-        loading: action.payload
-      });
-
-    default:
-      throw new Error();
-  }
-};
-
-var PostContextProvider = function PostContextProvider(_ref) {
-  var children = _ref.children;
-
-  var _useReducer = React.useReducer(reducer, initialState),
-      state = _useReducer[0],
-      dispatch = _useReducer[1];
-
-  return /*#__PURE__*/React__default.createElement(PostContext.Provider, {
-    value: [state, dispatch]
-  }, children);
-};
-
-PostContextProvider.propTypes = {
-  children: propTypes.node.isRequired
-};
-
-var SearchField = function SearchField(_ref) {
-  var placeholder = _ref.placeholder,
-      value = _ref.value,
-      name = _ref.name,
-      minSearchCharacters = _ref.minSearchCharacters,
-      perPage = _ref.perPage,
-      query = _ref.query,
-      endpoint = _ref.endpoint,
-      hitMap = _ref.hitMap;
-
-  var _useState = React.useState(value),
-      searchValue = _useState[0],
-      setSearchValue = _useState[1];
-
-  var _useContext = React.useContext(PostContext),
-      dispatch = _useContext[1];
-
-  var onChange = function onChange(event) {
-    setSearchValue(event.target.value);
-
-    if (event.target.value.length >= minSearchCharacters) {
-      dispatch({
-        type: 'set_loading',
-        payload: true
-      });
-      var newQuery = replacePlaceholderInObjectValues(query, '%SEARCH_TERMS%', event.target.value);
-      newQuery = replacePlaceholderInObjectValues(newQuery, '%PER_PAGE%', perPage);
-      post(newQuery, endpoint).then(function (response) {
-        var newResults = [];
-
-        if (response.hits && response.hits.hits) {
-          newResults = response.hits.hits.map(hitMap);
-        }
-
-        dispatch({
-          type: 'set_posts',
-          payload: newResults
-        });
-        dispatch({
-          type: 'set_loading',
-          payload: false
-        });
-      });
-    } else {
-      dispatch({
-        type: 'set_posts',
-        payload: null
-      });
-    }
-  };
-
-  return /*#__PURE__*/React__default.createElement("input", {
-    type: "search",
-    className: "search-field",
-    placeholder: placeholder,
-    value: searchValue,
-    name: name,
-    onChange: onChange
-  });
-};
-
 var query$2 = {
   from: 0,
   size: '%PER_PAGE%',
@@ -1644,26 +1544,166 @@ var query$2 = {
     }
   }
 };
-SearchField.defaultProps = {
-  name: 's',
-  placeholder: 'Search...',
-  value: '',
-  minSearchCharacters: 3,
+
+var PostContext = React.createContext();
+var initialState = {
+  results: null,
+  searchTerms: null,
+  perPage: 10,
+  offset: 0,
+  totalResults: null,
+  loading: false,
+  query: null,
+  hitMap: null,
+  endpoint: null
+};
+
+var reducer = function reducer(state, action) {
+  switch (action.type) {
+    case 'set_results':
+      return _extends({}, state, action.payload);
+
+    case 'set_loading':
+      return _extends({}, state, {
+        loading: action.payload
+      });
+
+    case 'set_search_terms':
+      return _extends({}, state, {
+        searchTerms: action.payload
+      });
+
+    default:
+      throw new Error();
+  }
+};
+
+var PostContextProvider = function PostContextProvider(_ref) {
+  var children = _ref.children,
+      endpoint = _ref.endpoint,
+      hitMap = _ref.hitMap,
+      query = _ref.query,
+      perPage = _ref.perPage;
+  initialState = _extends({}, initialState, {
+    endpoint: endpoint,
+    hitMap: hitMap,
+    query: query,
+    perPage: perPage
+  });
+
+  var _useReducer = React.useReducer(reducer, initialState),
+      state = _useReducer[0],
+      dispatch = _useReducer[1];
+
+  return /*#__PURE__*/React__default.createElement(PostContext.Provider, {
+    value: [state, dispatch]
+  }, children);
+};
+
+PostContextProvider.propTypes = {
+  children: propTypes.node.isRequired,
+  perPage: propTypes.number,
+  hitMap: propTypes.func,
+  query: propTypes.object,
+  endpoint: propTypes.string.isRequired
+};
+PostContextProvider.defaultProps = {
   perPage: 10,
   query: query$2,
   hitMap: function hitMap(hit) {
     return hit._source;
   }
 };
+
+var SearchField = function SearchField(_ref) {
+  var placeholder = _ref.placeholder,
+      value = _ref.value,
+      name = _ref.name,
+      minSearchCharacters = _ref.minSearchCharacters;
+
+  var _useState = React.useState(value),
+      searchValue = _useState[0],
+      setSearchValue = _useState[1];
+
+  var _useContext = React.useContext(PostContext),
+      state = _useContext[0],
+      dispatch = _useContext[1];
+
+  var onChange = function onChange(event) {
+    var searchTerms = event.target.value;
+    setSearchValue(searchTerms);
+    dispatch({
+      type: 'set_search_terms',
+      payload: searchTerms
+    });
+
+    if (searchTerms.length >= minSearchCharacters) {
+      dispatch({
+        type: 'set_loading',
+        payload: true
+      });
+      var newQuery = replacePlaceholderInObjectValues(state.query, '%SEARCH_TERMS%', searchTerms);
+      newQuery = replacePlaceholderInObjectValues(newQuery, '%PER_PAGE%', state.perPage);
+      post(newQuery, state.endpoint).then(function (response) {
+        var newResults = [];
+        var totalResults = 0;
+
+        if (response.hits && response.hits.hits) {
+          if (response.hits.total && response.hits.total.value) {
+            totalResults = parseInt(response.hits.total.value, 10);
+          }
+
+          newResults = response.hits.hits.map(state.hitMap);
+        }
+
+        dispatch({
+          type: 'set_results',
+          payload: {
+            results: newResults,
+            totalResults: totalResults,
+            offset: state.perPage,
+            searchTerms: searchTerms
+          }
+        });
+        dispatch({
+          type: 'set_loading',
+          payload: false
+        });
+      });
+    } else {
+      dispatch({
+        type: 'set_results',
+        payload: {
+          results: null,
+          offset: 0,
+          totalResults: null,
+          searchTerms: searchTerms
+        }
+      });
+    }
+  };
+
+  return /*#__PURE__*/React__default.createElement("input", {
+    type: "search",
+    className: "search-field",
+    placeholder: placeholder,
+    value: searchValue,
+    name: name,
+    onChange: onChange
+  });
+};
+
+SearchField.defaultProps = {
+  name: 's',
+  placeholder: 'Search...',
+  value: '',
+  minSearchCharacters: 3
+};
 SearchField.propTypes = {
   name: propTypes.string,
   value: propTypes.string,
   placeholder: propTypes.string,
-  endpoint: propTypes.string.isRequired,
-  query: propTypes.object,
-  minSearchCharacters: propTypes.number,
-  perPage: propTypes.number,
-  hitMap: propTypes.func
+  minSearchCharacters: propTypes.number
 };
 
 var PostItem = function PostItem(_ref) {
@@ -1677,29 +1717,91 @@ PostItem.propTypes = {
   post: propTypes.object.isRequired
 };
 
+var styles$1 = {"button":"_load-more-module__button__2yhed"};
+
+var LoadMore = function LoadMore(_ref) {
+  var buttonText = _ref.buttonText;
+
+  var _useContext = React.useContext(PostContext),
+      state = _useContext[0],
+      dispatch = _useContext[1];
+
+  var handleLoadMore = function handleLoadMore() {
+    dispatch({
+      type: 'set_loading',
+      payload: true
+    });
+    var newQuery = replacePlaceholderInObjectValues(state.query, '%SEARCH_TERMS%', state.searchTerms);
+    newQuery = replacePlaceholderInObjectValues(newQuery, '%PER_PAGE%', state.perPage);
+    newQuery.from = state.offset;
+    post(newQuery, state.endpoint).then(function (response) {
+      var newResults = [];
+      var totalResults = 0;
+
+      if (response.hits && response.hits.hits) {
+        if (response.hits.total && response.hits.total.value) {
+          totalResults = parseInt(response.hits.total.value, 10);
+        }
+
+        newResults = response.hits.hits.map(state.hitMap);
+      }
+
+      dispatch({
+        type: 'set_results',
+        payload: {
+          results: state.results.concat(newResults),
+          totalResults: totalResults,
+          offset: state.offset + state.perPage
+        }
+      });
+      dispatch({
+        type: 'set_loading',
+        payload: false
+      });
+    });
+  };
+
+  return /*#__PURE__*/React__default.createElement("button", {
+    className: styles$1.button + " ep-load-more",
+    onClick: handleLoadMore,
+    type: "button"
+  }, buttonText);
+};
+
+LoadMore.defaultProps = {
+  buttonText: 'Load More'
+};
+LoadMore.propTypes = {
+  buttonText: propTypes.string
+};
+
 var Posts = function Posts(_ref) {
   var PostItemComponent = _ref.PostItemComponent,
-      noPostsFoundMessage = _ref.noPostsFoundMessage;
+      noPostsFoundMessage = _ref.noPostsFoundMessage,
+      LoadMoreComponent = _ref.LoadMoreComponent;
 
   var _useContext = React.useContext(PostContext),
       state = _useContext[0];
 
   return /*#__PURE__*/React__default.createElement("section", {
     className: "ep-posts" + (state.loading ? ' loading' : '')
-  }, !state.loading && state.posts && state.posts.length ? /*#__PURE__*/React__default.createElement("ul", null, state.posts.map(function (post) {
+  }, !state.loading && state.results && state.results.length ? /*#__PURE__*/React__default.createElement("ul", null, state.results.map(function (post) {
+    console.log(post);
     return /*#__PURE__*/React__default.createElement(PostItemComponent, {
       key: post.ID,
       post: post
     });
-  })) : '', !state.loading && state.posts && !state.posts.length ? /*#__PURE__*/React__default.createElement("p", null, noPostsFoundMessage) : '');
+  })) : '', !state.loading && state.results && !state.results.length ? /*#__PURE__*/React__default.createElement("p", null, noPostsFoundMessage) : '', !state.loading && state.results && state.results.length < state.totalResults ? /*#__PURE__*/React__default.createElement(LoadMoreComponent, null) : '');
 };
 
 Posts.defaultProps = {
   PostItemComponent: PostItem,
+  LoadMoreComponent: LoadMore,
   noPostsFoundMessage: 'No posts found.'
 };
 Posts.propTypes = {
   PostItemComponent: propTypes.func,
+  LoadMoreComponent: propTypes.func,
   noPostsFoundMessage: propTypes.string
 };
 

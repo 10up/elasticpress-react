@@ -41,3 +41,15 @@
 	padding: 8px 10px;
 	cursor: pointer;
 }
+
+._load-more-module__button__2yhed {
+	background-color: #888;
+	color: #fff;
+	border: 0;
+	padding: 10px 14px;
+	cursor: pointer;
+}
+
+._load-more-module__button__2yhed:hover {
+	background-color: #777;
+}

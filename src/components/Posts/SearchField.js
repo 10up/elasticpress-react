@@ -8,46 +8,53 @@ import { replacePlaceholderInObjectValues } from '../../utils';
 import { PostContext } from '../../contexts/PostContext';
 import { post } from '../../api';
 
-const SearchField = ({
-	placeholder,
-	value,
-	name,
-	minSearchCharacters,
-	perPage,
-	query,
-	endpoint,
-	hitMap,
-}) => {
+const SearchField = ({ placeholder, value, name, minSearchCharacters }) => {
 	const [searchValue, setSearchValue] = useState(value);
-	const [, dispatch] = useContext(PostContext);
+	const [state, dispatch] = useContext(PostContext);
 
 	const onChange = (event) => {
-		setSearchValue(event.target.value);
+		const searchTerms = event.target.value;
 
-		if (event.target.value.length >= minSearchCharacters) {
+		setSearchValue(searchTerms);
+
+		dispatch({
+			type: 'set_search_terms',
+			payload: searchTerms,
+		});
+
+		if (searchTerms.length >= minSearchCharacters) {
 			dispatch({
 				type: 'set_loading',
 				payload: true,
 			});
 
 			let newQuery = replacePlaceholderInObjectValues(
-				query,
+				state.query,
 				'%SEARCH_TERMS%',
-				event.target.value,
+				searchTerms,
 			);
 
-			newQuery = replacePlaceholderInObjectValues(newQuery, '%PER_PAGE%', perPage);
+			newQuery = replacePlaceholderInObjectValues(newQuery, '%PER_PAGE%', state.perPage);
 
-			post(newQuery, endpoint).then((response) => {
+			post(newQuery, state.endpoint).then((response) => {
 				let newResults = [];
+				let totalResults = 0;
 
 				if (response.hits && response.hits.hits) {
-					newResults = response.hits.hits.map(hitMap);
+					if (response.hits.total && response.hits.total.value) {
+						totalResults = parseInt(response.hits.total.value, 10);
+					}
+					newResults = response.hits.hits.map(state.hitMap);
 				}
 
 				dispatch({
-					type: 'set_posts',
-					payload: newResults,
+					type: 'set_results',
+					payload: {
+						results: newResults,
+						totalResults,
+						offset: state.perPage,
+						searchTerms,
+					},
 				});
 
 				dispatch({
@@ -57,8 +64,13 @@ const SearchField = ({
 			});
 		} else {
 			dispatch({
-				type: 'set_posts',
-				payload: null,
+				type: 'set_results',
+				payload: {
+					results: null,
+					offset: 0,
+					totalResults: null,
+					searchTerms,
+				},
 			});
 		}
 	};
@@ -75,110 +87,18 @@ const SearchField = ({
 	);
 };
 
-export const query = {
-	from: 0,
-	size: '%PER_PAGE%',
-	sort: [
-		{
-			_score: {
-				order: 'desc',
-			},
-		},
-	],
-	query: {
-		function_score: {
-			query: {
-				bool: {
-					should: [
-						{
-							bool: {
-								should: [
-									{
-										multi_match: {
-											query: '%SEARCH_TERMS%',
-											type: 'phrase',
-											fields: [
-												'post_title^8',
-												'post_excerpt^1',
-												'post_content^1',
-												'terms.ep_custom_result.name^9999',
-											],
-											boost: 4,
-										},
-									},
-									{
-										multi_match: {
-											query: '%SEARCH_TERMS%',
-											fields: [
-												'post_title^8',
-												'post_excerpt^1',
-												'post_content^1',
-												'terms.ep_custom_result.name^9999',
-											],
-											type: 'phrase',
-											slop: 5,
-										},
-									},
-								],
-							},
-						},
-					],
-				},
-			},
-			functions: [
-				{
-					exp: {
-						post_date_gmt: {
-							scale: '14d',
-							decay: 0.25,
-							offset: '7d',
-						},
-					},
-				},
-			],
-			score_mode: 'avg',
-			boost_mode: 'sum',
-		},
-	},
-	post_filter: {
-		bool: {
-			must: [
-				{
-					terms: {
-						'post_type.raw': ['post', 'page'],
-					},
-				},
-				{
-					term: {
-						post_status: 'publish',
-					},
-				},
-			],
-		},
-	},
-};
-
 SearchField.defaultProps = {
 	name: 's',
 	placeholder: 'Search...',
 	value: '',
 	minSearchCharacters: 3,
-	perPage: 10,
-	query,
-	hitMap: (hit) => {
-		return hit._source;
-	},
 };
 
 SearchField.propTypes = {
 	name: PropTypes.string,
 	value: PropTypes.string,
 	placeholder: PropTypes.string,
-	endpoint: PropTypes.string.isRequired,
-	query: PropTypes.object,
 	minSearchCharacters: PropTypes.number,
-	perPage: PropTypes.number,
-	hitMap: PropTypes.func,
 };
 
 export default SearchField;
