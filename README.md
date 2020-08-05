@@ -41,6 +41,10 @@ const MyComponent = () => {
 };
 ```
 
+#### Screenshot
+
+![Autosuggest screenshot](https://github.com/10up/elasticpress-react/raw/develop/screenshots/autosuggest.jpg)
+
 ### Related Content
 
 This component outputs content related to a post.
@@ -61,6 +65,30 @@ const MyComponent = () => {
 	</>
 };
 ```
+
+### Search and Posts
+
+These components provide a provider, a search field, and a posts river. Using these components, you can create a full search experience.
+
+```js
+import { PostContextProvider, SearchField, Posts } from '@10up/elasticpress-react';
+
+const MyComponent = () => {
+	// Make sure to wrap your components with the provider.
+	<PostContextProvider perPage="10" endpoint="http://elasticpress.test/__elasticsearch/elasticpresstest-post-1/_doc/_search">
+		<>
+			{ /* This is the search field input. */ }
+			<SearchField />
+
+			{ /* This is the posts river. It will show a load more button if more than perPage posts. */ }
+			<Posts />
+		</>
+	</PostContextProvider>
+};
+```
+
+#### Screenshot
+![Posts screenshot](https://github.com/10up/elasticpress-react/raw/develop/screenshots/posts.jpg)
 
 ## Support Level
 

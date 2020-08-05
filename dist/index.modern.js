@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useCallback, useState } from 'react';
+import React, { useRef, useEffect, useCallback, useState, createContext, useReducer, useContext } from 'react';
 
 function createCommonjsModule(fn, module) {
 	return module = { exports: {} }, fn(module, module.exports), module.exports;
@@ -1077,50 +1077,38 @@ if (process.env.NODE_ENV !== 'production') {
 }
 });
 
-var post = function post(data, endpoint) {
-  try {
-    var options = {
-      method: 'POST',
-      credentials: 'same-origin',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    };
-    return Promise.resolve(fetch(endpoint, options)).then(function (response) {
-      return response.json();
-    });
-  } catch (e) {
-    return Promise.reject(e);
-  }
+const post = async (data, endpoint) => {
+  const options = {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  };
+  const response = await fetch(endpoint, options);
+  return response.json();
 };
-var get = function get(data, endpoint) {
-  try {
-    var endpointWithParams = endpoint + "?";
+const get = async (data, endpoint) => {
+  let endpointWithParams = `${endpoint}?`;
 
-    if (data && Object.keys(data).length) {
-      endpointWithParams += Object.keys(data).map(function (key) {
-        return key + "=" + data[key];
-      }).join('&');
-    }
-
-    return Promise.resolve(fetch(endpointWithParams)).then(function (response) {
-      return response.json();
-    });
-  } catch (e) {
-    return Promise.reject(e);
+  if (data && Object.keys(data).length) {
+    endpointWithParams += Object.keys(data).map(key => `${key}=${data[key]}`).join('&');
   }
+
+  const response = await fetch(endpointWithParams);
+  return response.json();
 };
 
-var replacePlaceholderInObjectValues = function replacePlaceholderInObjectValues(oldObj, placeholder, replacement) {
-  var obj = JSON.parse(JSON.stringify(oldObj));
+const replacePlaceholderInObjectValues = (oldObj, placeholder, replacement) => {
+  const obj = JSON.parse(JSON.stringify(oldObj));
 
-  var isPlainObject = function isPlainObject(something) {
+  const isPlainObject = something => {
     return Object.prototype.toString.call(something) === '[object Object]';
   };
 
-  var recurseArray = function recurseArray(arr) {
-    return arr.map(function (value) {
+  const recurseArray = arr => {
+    return arr.map(value => {
       if (Array.isArray(value)) {
         return recurseArray(value);
       }
@@ -1137,8 +1125,8 @@ var replacePlaceholderInObjectValues = function replacePlaceholderInObjectValues
     });
   };
 
-  var recurseObject = function recurseObject(newObj) {
-    Object.keys(newObj).forEach(function (key) {
+  const recurseObject = newObj => {
+    Object.keys(newObj).forEach(key => {
       if (typeof newObj[key] === 'string' || newObj[key] instanceof String) {
         newObj[key] = newObj[key].replace(placeholder, replacement);
       } else if (Array.isArray(newObj[key])) {
@@ -1153,25 +1141,26 @@ var replacePlaceholderInObjectValues = function replacePlaceholderInObjectValues
   return recurseObject(obj);
 };
 
-var styles = {"container":"_vT4Ul","dropdownContainer":"_PlA2z","dropdownList":"_2yOkM","dropdownItem":"_3Licv","link":"_1WyR8"};
+var styles = {"container":"_styles-module__container__vT4Ul","dropdownContainer":"_styles-module__dropdownContainer__PlA2z","dropdownList":"_styles-module__dropdownList__2yOkM","dropdownItem":"_styles-module__dropdownItem__3Licv","link":"_styles-module__link__1WyR8"};
 
-var AutosuggestFieldItem = function AutosuggestFieldItem(_ref) {
-  var result = _ref.result,
-      focus = _ref.focus,
-      index = _ref.index,
-      setFocus = _ref.setFocus;
-  var ref = useRef(null);
-  useEffect(function () {
+const AutosuggestFieldItem = ({
+  result,
+  focus,
+  index,
+  setFocus
+}) => {
+  const ref = useRef(null);
+  useEffect(() => {
     if (focus) {
       ref.current.focus();
     }
   }, [focus]);
 
-  var handleNavigate = function handleNavigate() {
+  const handleNavigate = () => {
     document.location = result.permalink;
   };
 
-  var handleSelect = useCallback(function (event) {
+  const handleSelect = useCallback(event => {
     if (event.key === 'Enter') {
       handleNavigate();
       return;
@@ -1182,7 +1171,7 @@ var AutosuggestFieldItem = function AutosuggestFieldItem(_ref) {
   return /*#__PURE__*/React.createElement("li", {
     tabIndex: focus ? 0 : -1,
     role: "button",
-    className: styles.dropdownItem + " autosuggest-item",
+    className: `${styles.dropdownItem} autosuggest-item`,
     ref: ref,
     onClick: handleNavigate,
     onKeyPress: handleSelect
@@ -1197,11 +1186,8 @@ AutosuggestFieldItem.propTypes = {
 };
 
 function useRoveFocus(size) {
-  var _useState = useState(-1),
-      currentFocus = _useState[0],
-      setCurrentFocus = _useState[1];
-
-  var handleKeyDown = useCallback(function (e) {
+  const [currentFocus, setCurrentFocus] = useState(-1);
+  const handleKeyDown = useCallback(e => {
     if (e.keyCode === 40) {
       e.preventDefault();
       setCurrentFocus(currentFocus === size - 1 ? -1 : currentFocus + 1);
@@ -1210,44 +1196,35 @@ function useRoveFocus(size) {
       setCurrentFocus(currentFocus === -1 ? size - 1 : currentFocus - 1);
     }
   }, [size, currentFocus, setCurrentFocus]);
-  useEffect(function () {
+  useEffect(() => {
     document.addEventListener('keydown', handleKeyDown, false);
-    return function () {
+    return () => {
       document.removeEventListener('keydown', handleKeyDown, false);
     };
   }, [handleKeyDown]);
   return [currentFocus, setCurrentFocus];
 }
 
-var AutosuggestField = function AutosuggestField(_ref) {
-  var value = _ref.value,
-      placeholder = _ref.placeholder,
-      name = _ref.name,
-      endpoint = _ref.endpoint,
-      query = _ref.query,
-      hitMap = _ref.hitMap,
-      minSearchCharacters = _ref.minSearchCharacters,
-      numResults = _ref.numResults;
+const AutosuggestField = ({
+  value,
+  placeholder,
+  name,
+  endpoint,
+  query,
+  hitMap,
+  minSearchCharacters,
+  numResults
+}) => {
+  const [searchValue, setSearchValue] = useState(value);
+  const [results, setResults] = useState(false);
+  const [focus, setFocus] = useRoveFocus(numResults);
+  const inputRef = useRef(null);
 
-  var _useState = useState(value),
-      searchValue = _useState[0],
-      setSearchValue = _useState[1];
-
-  var _useState2 = useState(false),
-      results = _useState2[0],
-      setResults = _useState2[1];
-
-  var _useRoveFocus = useRoveFocus(numResults),
-      focus = _useRoveFocus[0],
-      setFocus = _useRoveFocus[1];
-
-  var inputRef = useRef(null);
-
-  var getResults = function getResults(search) {
-    var newQuery = replacePlaceholderInObjectValues(query, '%SEARCH_TERMS_PLACEHOLDER%', search);
+  const getResults = search => {
+    let newQuery = replacePlaceholderInObjectValues(query, '%SEARCH_TERMS%', search);
     newQuery = replacePlaceholderInObjectValues(newQuery, '%NUM_RESULTS%', numResults);
-    post(newQuery, endpoint).then(function (response) {
-      var newResults = [];
+    post(newQuery, endpoint).then(response => {
+      let newResults = [];
 
       if (response.hits && response.hits.hits) {
         newResults = response.hits.hits.map(hitMap);
@@ -1257,7 +1234,7 @@ var AutosuggestField = function AutosuggestField(_ref) {
     });
   };
 
-  var onChange = function onChange(event) {
+  const onChange = event => {
     setSearchValue(event.target.value);
 
     if (event.target.value.length >= minSearchCharacters) {
@@ -1267,13 +1244,13 @@ var AutosuggestField = function AutosuggestField(_ref) {
     }
   };
 
-  useEffect(function () {
+  useEffect(() => {
     if (focus === -1) {
       inputRef.current.focus();
     }
   }, [focus]);
   return /*#__PURE__*/React.createElement("div", {
-    className: styles.container + " ep-autosuggest-container"
+    className: `${styles.container} ep-autosuggest-container`
   }, /*#__PURE__*/React.createElement("input", {
     onChange: onChange,
     type: "search",
@@ -1283,11 +1260,11 @@ var AutosuggestField = function AutosuggestField(_ref) {
     ref: inputRef,
     autoComplete: "off"
   }), results && results.length ? /*#__PURE__*/React.createElement("div", {
-    className: styles.dropdownContainer + " ep-autosuggest"
+    className: `${styles.dropdownContainer} ep-autosuggest`
   }, /*#__PURE__*/React.createElement("ul", {
-    className: styles.dropdownList + " autosuggest-list",
+    className: `${styles.dropdownList} autosuggest-list`,
     role: "listbox"
-  }, results.map(function (result, index) {
+  }, results.map((result, index) => {
     return /*#__PURE__*/React.createElement(AutosuggestFieldItem, {
       key: result.ID,
       setFocus: setFocus,
@@ -1298,7 +1275,7 @@ var AutosuggestField = function AutosuggestField(_ref) {
   }))) : '');
 };
 
-var query = {
+const query = {
   from: 0,
   size: '%NUM_RESULTS%',
   sort: [{
@@ -1314,14 +1291,14 @@ var query = {
             bool: {
               should: [{
                 multi_match: {
-                  query: '%SEARCH_TERMS_PLACEHOLDER%',
+                  query: '%SEARCH_TERMS%',
                   type: 'phrase',
                   fields: ['post_title^8', 'post_excerpt^1', 'post_content^1', 'terms.ep_custom_result.name^9999'],
                   boost: 4
                 }
               }, {
                 multi_match: {
-                  query: '%SEARCH_TERMS_PLACEHOLDER%',
+                  query: '%SEARCH_TERMS%',
                   fields: ['post_title^8', 'post_excerpt^1', 'post_content^1', 'terms.ep_custom_result.name^9999'],
                   type: 'phrase',
                   slop: 5
@@ -1364,8 +1341,8 @@ AutosuggestField.defaultProps = {
   value: '',
   minSearchCharacters: 3,
   numResults: 10,
-  query: query,
-  hitMap: function hitMap(hit) {
+  query,
+  hitMap: hit => {
     return hit._source;
   }
 };
@@ -1380,45 +1357,38 @@ AutosuggestField.propTypes = {
   numResults: propTypes.number
 };
 
-var RelatedContent = function RelatedContent(_ref) {
-  var query = _ref.query,
-      wpApiRoot = _ref.wpApiRoot,
-      numItems = _ref.numItems,
-      postId = _ref.postId;
+const RelatedContent = ({
+  query,
+  wpApiRoot,
+  numItems,
+  postId
+}) => {
+  const [results, setResults] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  var _useState = useState(false),
-      results = _useState[0],
-      setResults = _useState[1];
-
-  var _useState2 = useState(false),
-      loading = _useState2[0],
-      setLoading = _useState2[1];
-
-  var getResults = function getResults() {
-    var newQuery = replacePlaceholderInObjectValues(query, '%POST_ID%', postId);
+  const getResults = () => {
+    let newQuery = replacePlaceholderInObjectValues(query, '%POST_ID%', postId);
     newQuery = replacePlaceholderInObjectValues(newQuery, '%NUM_ITEMS%', numItems);
     setLoading(true);
-    get(newQuery, wpApiRoot + "/wp/v2/posts/" + postId + "/related?number=" + numItems).then(function (posts) {
+    get(newQuery, `${wpApiRoot}/wp/v2/posts/${postId}/related?number=${numItems}`).then(posts => {
       setResults(posts);
       setLoading(false);
     });
   };
 
-  useEffect(function () {
+  useEffect(() => {
     getResults();
   }, [postId, query, wpApiRoot, numItems]);
   return /*#__PURE__*/React.createElement("section", {
-    className: "ep-related-content" + (loading ? ' loading' : '')
-  }, results ? /*#__PURE__*/React.createElement("ul", null, results.map(function (result) {
-    return /*#__PURE__*/React.createElement("li", {
-      key: result.id
-    }, /*#__PURE__*/React.createElement("a", {
-      href: result.link
-    }, result.title.rendered));
-  })) : '');
+    className: `ep-related-content${loading ? ' loading' : ''}`
+  }, results ? /*#__PURE__*/React.createElement("ul", null, results.map(result => /*#__PURE__*/React.createElement("li", {
+    key: result.id
+  }, /*#__PURE__*/React.createElement("a", {
+    href: result.link
+  }, result.title.rendered)))) : '');
 };
 
-var query$1 = {
+const query$1 = {
   from: 0,
   size: '%NUM_ITEMS%',
   sort: [{
@@ -1463,5 +1433,317 @@ RelatedContent.propTypes = {
   postId: propTypes.number.isRequired
 };
 
-export { AutosuggestField, RelatedContent };
+const query$2 = {
+  from: 0,
+  size: '%PER_PAGE%',
+  sort: [{
+    _score: {
+      order: 'desc'
+    }
+  }],
+  query: {
+    function_score: {
+      query: {
+        bool: {
+          should: [{
+            bool: {
+              should: [{
+                multi_match: {
+                  query: '%SEARCH_TERMS%',
+                  type: 'phrase',
+                  fields: ['post_title^8', 'post_excerpt^1', 'post_content^1', 'terms.ep_custom_result.name^9999'],
+                  boost: 4
+                }
+              }, {
+                multi_match: {
+                  query: '%SEARCH_TERMS%',
+                  fields: ['post_title^8', 'post_excerpt^1', 'post_content^1', 'terms.ep_custom_result.name^9999'],
+                  type: 'phrase',
+                  slop: 5
+                }
+              }]
+            }
+          }]
+        }
+      },
+      functions: [{
+        exp: {
+          post_date_gmt: {
+            scale: '14d',
+            decay: 0.25,
+            offset: '7d'
+          }
+        }
+      }],
+      score_mode: 'avg',
+      boost_mode: 'sum'
+    }
+  },
+  post_filter: {
+    bool: {
+      must: [{
+        terms: {
+          'post_type.raw': ['post', 'page']
+        }
+      }, {
+        term: {
+          post_status: 'publish'
+        }
+      }]
+    }
+  }
+};
+
+const PostContext = createContext();
+let initialState = {
+  results: null,
+  searchTerms: null,
+  perPage: 10,
+  offset: 0,
+  totalResults: null,
+  loading: false,
+  query: null,
+  hitMap: null,
+  endpoint: null
+};
+
+const reducer = (state, action) => {
+  switch (action.type) {
+    case 'set_results':
+      return { ...state,
+        ...action.payload
+      };
+
+    case 'set_loading':
+      return { ...state,
+        loading: action.payload
+      };
+
+    case 'set_search_terms':
+      return { ...state,
+        searchTerms: action.payload
+      };
+
+    default:
+      throw new Error();
+  }
+};
+
+const PostContextProvider = ({
+  children,
+  endpoint,
+  hitMap,
+  query,
+  perPage
+}) => {
+  initialState = { ...initialState,
+    endpoint,
+    hitMap,
+    query,
+    perPage
+  };
+  const [state, dispatch] = useReducer(reducer, initialState);
+  return /*#__PURE__*/React.createElement(PostContext.Provider, {
+    value: [state, dispatch]
+  }, children);
+};
+
+PostContextProvider.propTypes = {
+  children: propTypes.node.isRequired,
+  perPage: propTypes.number,
+  hitMap: propTypes.func,
+  query: propTypes.object,
+  endpoint: propTypes.string.isRequired
+};
+PostContextProvider.defaultProps = {
+  perPage: 10,
+  query: query$2,
+  hitMap: hit => {
+    return hit._source;
+  }
+};
+
+const SearchField = ({
+  placeholder,
+  value,
+  name,
+  minSearchCharacters
+}) => {
+  const [searchValue, setSearchValue] = useState(value);
+  const [state, dispatch] = useContext(PostContext);
+
+  const onChange = event => {
+    const searchTerms = event.target.value;
+    setSearchValue(searchTerms);
+    dispatch({
+      type: 'set_search_terms',
+      payload: searchTerms
+    });
+
+    if (searchTerms.length >= minSearchCharacters) {
+      dispatch({
+        type: 'set_loading',
+        payload: true
+      });
+      let newQuery = replacePlaceholderInObjectValues(state.query, '%SEARCH_TERMS%', searchTerms);
+      newQuery = replacePlaceholderInObjectValues(newQuery, '%PER_PAGE%', state.perPage);
+      post(newQuery, state.endpoint).then(response => {
+        let newResults = [];
+        let totalResults = 0;
+
+        if (response.hits && response.hits.hits) {
+          if (response.hits.total && response.hits.total.value) {
+            totalResults = parseInt(response.hits.total.value, 10);
+          }
+
+          newResults = response.hits.hits.map(state.hitMap);
+        }
+
+        dispatch({
+          type: 'set_results',
+          payload: {
+            results: newResults,
+            totalResults,
+            offset: state.perPage,
+            searchTerms
+          }
+        });
+        dispatch({
+          type: 'set_loading',
+          payload: false
+        });
+      });
+    } else {
+      dispatch({
+        type: 'set_results',
+        payload: {
+          results: null,
+          offset: 0,
+          totalResults: null,
+          searchTerms
+        }
+      });
+    }
+  };
+
+  return /*#__PURE__*/React.createElement("input", {
+    type: "search",
+    className: "search-field",
+    placeholder: placeholder,
+    value: searchValue,
+    name: name,
+    onChange: onChange
+  });
+};
+
+SearchField.defaultProps = {
+  name: 's',
+  placeholder: 'Search...',
+  value: '',
+  minSearchCharacters: 3
+};
+SearchField.propTypes = {
+  name: propTypes.string,
+  value: propTypes.string,
+  placeholder: propTypes.string,
+  minSearchCharacters: propTypes.number
+};
+
+const PostItem = ({
+  post
+}) => {
+  return /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
+    href: post.permalink
+  }, post.post_title));
+};
+
+PostItem.propTypes = {
+  post: propTypes.object.isRequired
+};
+
+var styles$1 = {"button":"_load-more-module__button__2yhed"};
+
+const LoadMore = ({
+  buttonText
+}) => {
+  const [state, dispatch] = useContext(PostContext);
+
+  const handleLoadMore = () => {
+    dispatch({
+      type: 'set_loading',
+      payload: true
+    });
+    let newQuery = replacePlaceholderInObjectValues(state.query, '%SEARCH_TERMS%', state.searchTerms);
+    newQuery = replacePlaceholderInObjectValues(newQuery, '%PER_PAGE%', state.perPage);
+    newQuery.from = state.offset;
+    post(newQuery, state.endpoint).then(response => {
+      let newResults = [];
+      let totalResults = 0;
+
+      if (response.hits && response.hits.hits) {
+        if (response.hits.total && response.hits.total.value) {
+          totalResults = parseInt(response.hits.total.value, 10);
+        }
+
+        newResults = response.hits.hits.map(state.hitMap);
+      }
+
+      dispatch({
+        type: 'set_results',
+        payload: {
+          results: state.results.concat(newResults),
+          totalResults,
+          offset: state.offset + state.perPage
+        }
+      });
+      dispatch({
+        type: 'set_loading',
+        payload: false
+      });
+    });
+  };
+
+  return /*#__PURE__*/React.createElement("button", {
+    className: `${styles$1.button} ep-load-more`,
+    onClick: handleLoadMore,
+    type: "button"
+  }, buttonText);
+};
+
+LoadMore.defaultProps = {
+  buttonText: 'Load More'
+};
+LoadMore.propTypes = {
+  buttonText: propTypes.string
+};
+
+const Posts = ({
+  PostItemComponent,
+  noPostsFoundMessage,
+  LoadMoreComponent
+}) => {
+  const [state] = useContext(PostContext);
+  return /*#__PURE__*/React.createElement("section", {
+    className: `ep-posts${state.loading ? ' loading' : ''}`
+  }, !state.loading && state.results && state.results.length ? /*#__PURE__*/React.createElement("ul", null, state.results.map(post => {
+    console.log(post);
+    return /*#__PURE__*/React.createElement(PostItemComponent, {
+      key: post.ID,
+      post: post
+    });
+  })) : '', !state.loading && state.results && !state.results.length ? /*#__PURE__*/React.createElement("p", null, noPostsFoundMessage) : '', !state.loading && state.results && state.results.length < state.totalResults ? /*#__PURE__*/React.createElement(LoadMoreComponent, null) : '');
+};
+
+Posts.defaultProps = {
+  PostItemComponent: PostItem,
+  LoadMoreComponent: LoadMore,
+  noPostsFoundMessage: 'No posts found.'
+};
+Posts.propTypes = {
+  PostItemComponent: propTypes.func,
+  LoadMoreComponent: propTypes.func,
+  noPostsFoundMessage: propTypes.string
+};
+
+export { AutosuggestField, PostContext, PostContextProvider, Posts, RelatedContent, SearchField };
 //# sourceMappingURL=index.modern.js.map
