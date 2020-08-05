@@ -2,7 +2,8 @@
 
 All notable changes to this project will be documented in this file, per [the Keep a Changelog standard](http://keepachangelog.com/), and will adhere to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] - TBD
+## [1.2] - August 5, 2020
+* Add `Posts` and `SearchField` components.
 
 ## [1.0.1] - TBD
 ### Added
