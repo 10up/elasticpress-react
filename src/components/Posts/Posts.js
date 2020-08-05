@@ -16,7 +16,6 @@ const Posts = ({ PostItemComponent, noPostsFoundMessage, LoadMoreComponent }) =>
 			{!state.loading && state.results && state.results.length ? (
 				<ul>
 					{state.results.map((post) => {
-						console.log(post);
 						return <PostItemComponent key={post.ID} post={post} />;
 					})}
 				</ul>

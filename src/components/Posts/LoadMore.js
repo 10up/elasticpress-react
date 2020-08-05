@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 import { PostContext } from '../../contexts/PostContext';
 import styles from './load-more.module.css';
