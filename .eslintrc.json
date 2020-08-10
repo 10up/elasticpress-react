@@ -1,22 +1,17 @@
 {
 	"extends": [
-		"@10up/eslint-config",
 		"@10up/eslint-config/react",
 		"@10up/eslint-config/jest"
 	],
-	"env": {
-		"node": true,
-		"browser": true,
-		"jest": true
-	},
 	"rules": {
-		/*"import/export": 0,*/
-		"import/prefer-default-export": [ 0 ],
-		"react-hooks/exhaustive-deps": [ 0 ],
-		"no-underscore-dangle": [ 0 ],
-		"react/forbid-prop-types": [ 0 ],
-		"no-param-reassign": [ 0 ],
-		"import/no-extraneous-dependencies": [ 0 ],
-		"jest/expect-expect": [ 0 ]
-	}
+		"jest/expect-expect": 0
+	},
+	"overrides": [
+		{
+			"files": ["./example/**/*.js"],
+			"rules":{
+				"import/no-unresolved": 0
+			}
+		}
+	]
 }
