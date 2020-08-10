@@ -2,14 +2,14 @@
  * ElasticPress related content component
  */
 
-import React, { useContext } from 'react';
-import PropTypes from 'prop-types'; /* eslint-disable-line import/no-extraneous-dependencies */
-import { PostContext } from '../../contexts/PostContext';
+import React from 'react';
+import PropTypes from 'prop-types';
 import PostItem from './PostItem';
 import LoadMore from './LoadMore';
+import { useElasticPress } from '../Provider';
 
 const Posts = ({ PostItemComponent, noPostsFoundMessage, LoadMoreComponent }) => {
-	const [state] = useContext(PostContext);
+	const { state } = useElasticPress();
 
 	return (
 		<section className={`ep-posts${state.loading ? ' loading' : ''}`}>

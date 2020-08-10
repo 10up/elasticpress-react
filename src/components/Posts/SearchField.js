@@ -2,15 +2,16 @@
  * ElasticPress search field component
  */
 
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types'; /* eslint-disable-line import/no-extraneous-dependencies */
 import { replacePlaceholderInObjectValues } from '../../utils';
-import { PostContext } from '../../contexts/PostContext';
 import { post } from '../../api';
+import useElasticPress from '../Provider/useElasticPress';
+import { SET_SEARCH_TERMS, SET_LOADING, SET_RESULTS } from '../Provider';
 
 const SearchField = ({ placeholder, value, name, minSearchCharacters }) => {
 	const [searchValue, setSearchValue] = useState(value);
-	const [state, dispatch] = useContext(PostContext);
+	const { state, dispatch } = useElasticPress();
 
 	const onChange = (event) => {
 		const searchTerms = event.target.value;
@@ -18,13 +19,13 @@ const SearchField = ({ placeholder, value, name, minSearchCharacters }) => {
 		setSearchValue(searchTerms);
 
 		dispatch({
-			type: 'set_search_terms',
+			type: SET_SEARCH_TERMS,
 			payload: searchTerms,
 		});
 
 		if (searchTerms.length >= minSearchCharacters) {
 			dispatch({
-				type: 'set_loading',
+				type: SET_LOADING,
 				payload: true,
 			});
 
@@ -48,7 +49,7 @@ const SearchField = ({ placeholder, value, name, minSearchCharacters }) => {
 				}
 
 				dispatch({
-					type: 'set_results',
+					type: SET_RESULTS,
 					payload: {
 						results: newResults,
 						totalResults,
@@ -58,13 +59,13 @@ const SearchField = ({ placeholder, value, name, minSearchCharacters }) => {
 				});
 
 				dispatch({
-					type: 'set_loading',
+					type: SET_LOADING,
 					payload: false,
 				});
 			});
 		} else {
 			dispatch({
-				type: 'set_results',
+				type: SET_RESULTS,
 				payload: {
 					results: null,
 					offset: 0,

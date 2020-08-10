@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ElasticPressProvider works 1`] = `
+<div>
+  <p>
+    I am a very simple test app
+  </p>
+</div>
+`;

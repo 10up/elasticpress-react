@@ -1,9 +1,8 @@
 /**
  * ElasticPress related content component
  */
-
 import React, { useState, useEffect, useCallback } from 'react';
-import PropTypes from 'prop-types'; /* eslint-disable-line import/no-extraneous-dependencies */
+import PropTypes from 'prop-types';
 import { get } from '../../api';
 import { replacePlaceholderInObjectValues } from '../../utils';
 
