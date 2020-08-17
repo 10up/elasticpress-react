@@ -8,7 +8,7 @@
  * @param {string} replacement Text to replace
  * @returns {*}
  */
-export const replacePlaceholderInObjectValues = (oldObj, placeholder, replacement) => {
+export default (oldObj, placeholder, replacement) => {
 	const obj = JSON.parse(JSON.stringify(oldObj));
 
 	const isPlainObject = (something) => {
