@@ -12,22 +12,23 @@ const App = () => {
 	return (
 		<div>
 			<h2>Autosuggest Field</h2>
-			<AutosuggestField endpoint="http://elasticpress.test/__elasticsearch/elasticpresstest-post-1/post/_search" />
+			<AutosuggestField endpoint="http://elasticpress.test/__elasticsearch/elasticpresstest-post-1/_doc/_search" />
 
 			<h2>Related Posts</h2>
 			<RelatedContent wpApiRoot="http://elasticpress.test/wp-json" postId={2738} />
 
 			<h2>Search</h2>
-			<ElasticPressProvider endpoint="http://elasticpress.test/__elasticsearch/elasticpresstest-post-1/post/_search">
-				<>
-					<div>
-						<SearchField />
-					</div>
+			<ElasticPressProvider
+				node="http://elasticpress.test/__elasticsearch"
+				indexName="elasticpresstest-post-1"
+			>
+				<div>
+					<SearchField />
+				</div>
 
-					<div>
-						<Posts />
-					</div>
-				</>
+				<div>
+					<Posts />
+				</div>
 			</ElasticPressProvider>
 		</div>
 	);

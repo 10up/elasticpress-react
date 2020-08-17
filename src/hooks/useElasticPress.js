@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { ElasticPressContext } from './ElasticPressProvider';
+import { ElasticPressContext } from '../components/Provider/ElasticPressProvider';
 
 /**
  * A simple hook to return the ElasticPressProvider state

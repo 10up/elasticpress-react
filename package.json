@@ -74,5 +74,7 @@
 	"files": [
 		"dist"
 	],
-	"dependencies": {}
+	"dependencies": {
+		"invariant": "^2.2.4"
+	}
 }

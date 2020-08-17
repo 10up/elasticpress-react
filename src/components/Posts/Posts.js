@@ -6,7 +6,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import PostItem from './PostItem';
 import LoadMore from './LoadMore';
-import { useElasticPress } from '../Provider';
+import { useElasticPress } from '../../hooks';
 
 const Posts = ({ PostItemComponent, noPostsFoundMessage, LoadMoreComponent }) => {
 	const { state } = useElasticPress();

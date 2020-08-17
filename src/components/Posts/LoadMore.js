@@ -1,15 +1,16 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import { PostContext } from '../../contexts/PostContext';
 import styles from './load-more.module.css';
 import { replacePlaceholderInObjectValues } from '../../utils';
 import { post } from '../../api';
+import { SET_LOADING, SET_RESULTS } from '../Provider';
+import { useElasticPress } from '../../hooks';
 
 const LoadMore = ({ buttonText }) => {
-	const [state, dispatch] = useContext(PostContext);
+	const { state, getEndpoint, dispatch } = useElasticPress();
 	const handleLoadMore = () => {
 		dispatch({
-			type: 'set_loading',
+			type: SET_LOADING,
 			payload: true,
 		});
 
@@ -23,7 +24,7 @@ const LoadMore = ({ buttonText }) => {
 
 		newQuery.from = state.offset;
 
-		post(newQuery, state.endpoint).then((response) => {
+		post(newQuery, getEndpoint('search')).then((response) => {
 			let newResults = [];
 			let totalResults = 0;
 
@@ -35,7 +36,7 @@ const LoadMore = ({ buttonText }) => {
 			}
 
 			dispatch({
-				type: 'set_results',
+				type: SET_RESULTS,
 				payload: {
 					results: state.results.concat(newResults),
 					totalResults,
@@ -44,7 +45,7 @@ const LoadMore = ({ buttonText }) => {
 			});
 
 			dispatch({
-				type: 'set_loading',
+				type: SET_LOADING,
 				payload: false,
 			});
 		});

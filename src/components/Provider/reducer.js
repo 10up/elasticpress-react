@@ -12,7 +12,8 @@ export const initialState = {
 	hitMap: (hit) => {
 		return hit._source;
 	},
-	endpoint: null,
+	node: null,
+	indexName: null,
 };
 
 const reducer = (state, action) => {
