@@ -9,7 +9,11 @@ const useSearch = () => {
 	const { dispatch, state, getEndpoint } = useElasticPress();
 
 	const refine = useCallback(
-		(value, minSearchCharacters) => {
+		(value, options = {}) => {
+			const minSearchCharacters = options?.minSearchCharacters ?? 3;
+			const offset = options?.offset ?? 0;
+			const append = options?.append ?? false;
+
 			dispatch({
 				type: SET_SEARCH_TERMS,
 				payload: value,
@@ -24,9 +28,12 @@ const useSearch = () => {
 				payload: true,
 			});
 
-			let newQuery = replacePlaceholderInObjectValues(state.query, '%SEARCH_TERMS%', value);
+			const newQuery = replacePlaceholderInObjectValues(state.query, {
+				'%SEARCH_TERMS%': value,
+				'%PER_PAGE%': state.perPage,
+			});
 
-			newQuery = replacePlaceholderInObjectValues(newQuery, '%PER_PAGE%', state.perPage);
+			newQuery.from = offset;
 
 			post(newQuery, getEndpoint('search')).then((response) => {
 				let newResults = [];
@@ -43,8 +50,9 @@ const useSearch = () => {
 					type: SET_RESULTS,
 					payload: {
 						results: newResults,
+						append,
 						totalResults,
-						offset: state.perPage,
+						offset: offset + state.perPage,
 						value,
 					},
 				});
@@ -58,7 +66,15 @@ const useSearch = () => {
 		[dispatch, state.query, state.hitMap, state.perPage, getEndpoint],
 	);
 
-	return { refine, searchTerms: state.searchTerms };
+	const loadMore = useCallback(() => {
+		refine(state.searchTerms, {
+			minSearchCharacters: 0,
+			offset: state.offset,
+			append: true,
+		});
+	}, [refine, state.offset, state.searchTerms]);
+
+	return { refine, searchTerms: state.searchTerms, results: state.results, loadMore };
 };
 
 export default useSearch;

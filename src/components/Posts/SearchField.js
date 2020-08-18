@@ -11,7 +11,7 @@ const SearchField = ({ placeholder, initialValue, name, minSearchCharacters }) =
 
 	const search = useCallback(
 		(searchTerms) => {
-			refine(searchTerms, minSearchCharacters);
+			refine(searchTerms, { minSearchCharacters });
 		},
 		[refine, minSearchCharacters],
 	);
@@ -26,7 +26,7 @@ const SearchField = ({ placeholder, initialValue, name, minSearchCharacters }) =
 			type="search"
 			className="search-field"
 			placeholder={placeholder}
-			value={searchTerms}
+			value={searchTerms || ''}
 			name={name}
 			onChange={(event) => search(event.target.value)}
 		/>

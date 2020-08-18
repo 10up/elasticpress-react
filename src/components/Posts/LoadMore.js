@@ -1,58 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styles from './load-more.module.css';
-import { replacePlaceholderInObjectValues } from '../../utils';
-import { post } from '../../api';
-import { SET_LOADING, SET_RESULTS } from '../Provider';
-import { useElasticPress } from '../../hooks';
+import { useSearch } from '../../hooks';
 
 const LoadMore = ({ buttonText }) => {
-	const { state, getEndpoint, dispatch } = useElasticPress();
-	const handleLoadMore = () => {
-		dispatch({
-			type: SET_LOADING,
-			payload: true,
-		});
-
-		let newQuery = replacePlaceholderInObjectValues(
-			state.query,
-			'%SEARCH_TERMS%',
-			state.searchTerms,
-		);
-
-		newQuery = replacePlaceholderInObjectValues(newQuery, '%PER_PAGE%', state.perPage);
-
-		newQuery.from = state.offset;
-
-		post(newQuery, getEndpoint('search')).then((response) => {
-			let newResults = [];
-			let totalResults = 0;
-
-			if (response.hits && response.hits.hits) {
-				if (response.hits.total && response.hits.total.value) {
-					totalResults = parseInt(response.hits.total.value, 10);
-				}
-				newResults = response.hits.hits.map(state.hitMap);
-			}
-
-			dispatch({
-				type: SET_RESULTS,
-				payload: {
-					results: state.results.concat(newResults),
-					totalResults,
-					offset: state.offset + state.perPage,
-				},
-			});
-
-			dispatch({
-				type: SET_LOADING,
-				payload: false,
-			});
-		});
-	};
+	const { loadMore } = useSearch();
 
 	return (
-		<button className={`${styles.button} ep-load-more`} onClick={handleLoadMore} type="button">
+		<button className={`${styles.button} ep-load-more`} onClick={loadMore} type="button">
 			{buttonText}
 		</button>
 	);

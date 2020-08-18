@@ -13,26 +13,20 @@ const Posts = ({ PostItemComponent, noPostsFoundMessage, LoadMoreComponent }) =>
 
 	return (
 		<section className={`ep-posts${state.loading ? ' loading' : ''}`}>
-			{!state.loading && state.results && state.results.length ? (
+			{!state.loading && state.results && state.results.length && (
 				<ul>
 					{state.results.map((post) => {
 						return <PostItemComponent key={post.ID} post={post} />;
 					})}
 				</ul>
-			) : (
-				''
 			)}
 
-			{!state.loading && state.results && !state.results.length ? (
+			{!state.loading && state.results && !state.results.length && (
 				<p>{noPostsFoundMessage}</p>
-			) : (
-				''
 			)}
 
-			{!state.loading && state.results && state.results.length < state.totalResults ? (
+			{!state.loading && state.results && state.results.length < state.totalResults && (
 				<LoadMoreComponent />
-			) : (
-				''
 			)}
 		</section>
 	);

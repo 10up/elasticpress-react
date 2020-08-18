@@ -26,15 +26,16 @@ const mapValuesDeep = (obj, iteree) => {
  * Recursively replace placeholders in an object. Returns new object
  *
  * @param {object} obj The object to recursively replaced placeholders from.
- * @param {string} placeholder e.g. %SEARCH_TERMS_PLACEHOLDER%
- * @param {string} replacement Text to replace
+ * @param {object} replacements Object with a list of replacements { %PLACEHOLDER%: 'replacement' }
  *
  * @returns {object}
  */
-export default (obj, placeholder, replacement) => {
+export default (obj, replacements) => {
+	const placeholders = Object.keys(replacements);
+
 	const processReplacements = (value) => {
-		if (typeof value === 'string') {
-			return value.replace(placeholder, replacement);
+		if (typeof value === 'string' && placeholders.includes(value)) {
+			return value.replace(value, replacements[value]);
 		}
 
 		return value;

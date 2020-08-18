@@ -13,7 +13,7 @@ const objectWithPlaceholders = {
 					},
 				},
 			},
-			c: [{ a: '%PLACEHOLDER%' }],
+			c: [{ a: '%PLACEHOLDE2R%' }],
 		},
 	},
 };
@@ -30,14 +30,17 @@ const expectedObject = {
 					},
 				},
 			},
-			c: [{ a: 'replaced' }],
+			c: [{ a: 'replaced2' }],
 		},
 	},
 };
 describe('replacePlaceholderInObjectValues', () => {
 	it('replaces placeholders in object successfuly', () => {
 		expect(
-			replacePlaceholderInObjectValues(objectWithPlaceholders, '%PLACEHOLDER%', 'replaced'),
+			replacePlaceholderInObjectValues(objectWithPlaceholders, {
+				'%PLACEHOLDER%': 'replaced',
+				'%PLACEHOLDE2R%': 'replaced2',
+			}),
 		).toMatchObject(expectedObject);
 	});
 });

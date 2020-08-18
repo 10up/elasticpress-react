@@ -18,11 +18,14 @@ export const initialState = {
 
 const reducer = (state, action) => {
 	switch (action.type) {
-		case SET_RESULTS:
+		case SET_RESULTS: {
+			const { append, ...payload } = action.payload;
 			return {
 				...state,
-				...action.payload,
+				...payload,
+				results: append ? state.results.concat(payload.results) : payload.results,
 			};
+		}
 		case SET_LOADING:
 			return {
 				...state,
