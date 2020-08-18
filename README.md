@@ -21,6 +21,18 @@ You will need an Elasticsearch instance and a WordPress website running [Elastic
 
 ## Components
 
+### ElasticPressProvider
+You must wrap your application with `ElasticPressProvider` in order to use the ElasticPress components.
+
+```js
+	<ElasticPressProvider
+		node="http://elasticpress.test/__elasticsearch"
+		indexName="elasticpresstest-post-1"
+	>
+		{/* ElasticPress Components */}
+	</ElasticPressProvider>
+```
+
 ### Autosuggest
 
 This component outputs a search field that when typed in will autosuggest results to the user.
@@ -28,17 +40,21 @@ This component outputs a search field that when typed in will autosuggest result
 ```js
 import { AutosuggestField } from '@10up/elasticpress-react';
 
-const MyComponent = () => {
+const MyComponent = () => (
 	<>
 		<p>Here is my fancy new component.</p>
 
 		<p>Here's a search input with autosuggest:</p>
 
-		<AutosuggestField
-			endpoint="https://myelasticsearchinstance.dev/indexname/_doc/_search"
-		/>
+		<ElasticPressProvider
+				node="http://elasticpress.test/__elasticsearch"
+				indexName="elasticpresstest-post-1"
+				loadInitialData={false}
+			>
+				<AutosuggestField />
+			</ElasticPressProvider>
 	</>
-};
+);
 ```
 
 #### Screenshot
@@ -52,7 +68,7 @@ This component outputs content related to a post.
 ```js
 import { RelatedContent } from '@10up/elasticpress-react';
 
-const MyComponent = () => {
+const MyComponent = () => (
 	<>
 		<p>Here is my fancy new component.</p>
 
@@ -63,27 +79,30 @@ const MyComponent = () => {
 			postId="5"
 		/>
 	</>
-};
+);
 ```
 
-### Search and Posts
-
-These components provide a provider, a search field, and a posts river. Using these components, you can create a full search experience.
+### Search and Post Results
 
 ```js
 import { PostContextProvider, SearchField, Posts } from '@10up/elasticpress-react';
 
 const MyComponent = () => {
 	// Make sure to wrap your components with the provider.
-	<PostContextProvider perPage="10" endpoint="http://elasticpress.test/__elasticsearch/elasticpresstest-post-1/_doc/_search">
-		<>
-			{ /* This is the search field input. */ }
-			<SearchField />
+	return (
+		<ElasticPressProvider
+			node="http://elasticpress.test/__elasticsearch"
+			indexName="elasticpresstest-post-1"
+		>
+			<div>
+				<SearchField />
+			</div>
 
-			{ /* This is the posts river. It will show a load more button if more than perPage posts. */ }
-			<Posts />
-		</>
-	</PostContextProvider>
+			<div>
+				<Posts />
+			</div>
+		</ElasticPressProvider>
+	);
 };
 ```
 
