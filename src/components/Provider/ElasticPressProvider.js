@@ -68,7 +68,7 @@ ElasticPressProvider.propTypes = {
 };
 
 ElasticPressProvider.defaultProps = {
-	perPage: 10,
+	perPage: initialState.perPage,
 	query: initialState.query,
 	hitMap: initialState.hitMap,
 };
