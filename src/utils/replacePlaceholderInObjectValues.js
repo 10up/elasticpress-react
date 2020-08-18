@@ -1,49 +1,44 @@
-/* eslint-disable no-use-before-define */
+import mapValues from 'lodash.mapvalues';
+import isObject from 'lodash.isobject';
+import isArray from 'lodash.isarray';
+
+/**
+ * Recursively map values from an array/object.
+ *
+ * @param {object|Array} obj The object/array to iterate over.
+ * @param {Function} iteree The function to apply to each value
+ *
+ * @returns {object|Array}
+ */
+const mapValuesDeep = (obj, iteree) => {
+	if (isArray(obj)) {
+		return obj.map((arrItem) => mapValuesDeep(arrItem, iteree));
+	}
+
+	if (isObject(obj)) {
+		return mapValues(obj, (v) => mapValuesDeep(v, iteree));
+	}
+
+	return iteree(obj);
+};
 
 /**
  * Recursively replace placeholders in an object. Returns new object
  *
- * @param {*} oldObj Object to recurse
+ * @param {object} obj The object to recursively replaced placeholders from.
  * @param {string} placeholder e.g. %SEARCH_TERMS_PLACEHOLDER%
  * @param {string} replacement Text to replace
- * @returns {*}
+ *
+ * @returns {object}
  */
-export default (oldObj, placeholder, replacement) => {
-	const obj = JSON.parse(JSON.stringify(oldObj));
+export default (obj, placeholder, replacement) => {
+	const processReplacements = (value) => {
+		if (typeof value === 'string') {
+			return value.replace(placeholder, replacement);
+		}
 
-	const isPlainObject = (something) => {
-		return Object.prototype.toString.call(something) === '[object Object]';
+		return value;
 	};
 
-	const recurseArray = (arr) => {
-		return arr.map((value) => {
-			if (Array.isArray(value)) {
-				return recurseArray(value);
-			}
-			if (isPlainObject(value)) {
-				return recurseObject(value);
-			}
-			if (typeof value === 'string' || value instanceof String) {
-				return value.replace(placeholder, replacement);
-			}
-
-			return value;
-		});
-	};
-
-	const recurseObject = (newObj) => {
-		Object.keys(newObj).forEach((key) => {
-			if (typeof newObj[key] === 'string' || newObj[key] instanceof String) {
-				newObj[key] = newObj[key].replace(placeholder, replacement);
-			} else if (Array.isArray(newObj[key])) {
-				newObj[key] = recurseArray(newObj[key]);
-			} else if (isPlainObject(newObj[key])) {
-				newObj[key] = recurseObject(newObj[key]);
-			}
-		});
-
-		return newObj;
-	};
-
-	return recurseObject(obj);
+	return mapValuesDeep(obj, processReplacements);
 };

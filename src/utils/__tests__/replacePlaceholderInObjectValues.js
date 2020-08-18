@@ -5,6 +5,15 @@ const objectWithPlaceholders = {
 		placeholder: '%PLACEHOLDER%',
 		anotherNested: {
 			placeholder: '%PLACEHOLDER%',
+			nested: '%PLACEHOLDER%',
+			a: {
+				b: {
+					c: {
+						d: '%PLACEHOLDER%',
+					},
+				},
+			},
+			c: [{ a: '%PLACEHOLDER%' }],
 		},
 	},
 };
@@ -13,6 +22,15 @@ const expectedObject = {
 		placeholder: 'replaced',
 		anotherNested: {
 			placeholder: 'replaced',
+			nested: 'replaced',
+			a: {
+				b: {
+					c: {
+						d: 'replaced',
+					},
+				},
+			},
+			c: [{ a: 'replaced' }],
 		},
 	},
 };
