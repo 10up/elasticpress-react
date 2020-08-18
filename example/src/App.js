@@ -15,6 +15,7 @@ const App = () => {
 			<ElasticPressProvider
 				node="http://elasticpress.test/__elasticsearch"
 				indexName="elasticpresstest-post-1"
+				loadInitialData={false}
 			>
 				<AutosuggestField />
 			</ElasticPressProvider>

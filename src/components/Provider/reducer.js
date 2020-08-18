@@ -1,5 +1,5 @@
 import { SET_RESULTS, SET_LOADING, SET_SEARCH_TERMS } from './actions';
-import { query as esQuery } from '../SearchField';
+import query from '../SearchField/query';
 
 export const initialState = {
 	results: null,
@@ -8,12 +8,13 @@ export const initialState = {
 	offset: 0,
 	totalResults: null,
 	loading: false,
-	query: esQuery,
+	query,
 	hitMap: (hit) => {
 		return hit._source;
 	},
 	node: null,
 	indexName: null,
+	loadInitialData: true,
 };
 
 const reducer = (state, action) => {

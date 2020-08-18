@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 
 import useElasticPress from './useElasticPress';
 import { SET_SEARCH_TERMS, SET_LOADING, SET_RESULTS } from '../components/Provider';
@@ -19,7 +19,7 @@ const useSearch = () => {
 				payload: value,
 			});
 
-			if (value < minSearchCharacters) {
+			if (typeof value === 'string' && value.length < minSearchCharacters) {
 				return;
 			}
 
@@ -34,6 +34,10 @@ const useSearch = () => {
 			});
 
 			newQuery.from = offset;
+
+			if (!value) {
+				delete newQuery.query;
+			}
 
 			post(newQuery, getEndpoint('search')).then((response) => {
 				let newResults = [];
@@ -73,6 +77,13 @@ const useSearch = () => {
 			append: true,
 		});
 	}, [refine, state.offset, state.searchTerms]);
+
+	// loadInitialData
+	useEffect(() => {
+		if (state.totalResults === null && state.loadInitialData) {
+			refine(null);
+		}
+	}, [refine, state.totalResults, state.loadInitialData]);
 
 	return { refine, searchTerms: state.searchTerms, results: state.results, loadMore };
 };

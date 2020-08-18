@@ -13,7 +13,7 @@ const Posts = ({ PostItemComponent, noPostsFoundMessage, LoadMoreComponent }) =>
 
 	return (
 		<section className={`ep-posts${state.loading ? ' loading' : ''}`}>
-			{!state.loading && state.results && state.results.length && (
+			{!state.loading && state.results && state.results.length > 0 && (
 				<ul>
 					{state.results.map((post) => {
 						return <PostItemComponent key={post.ID} post={post} />;

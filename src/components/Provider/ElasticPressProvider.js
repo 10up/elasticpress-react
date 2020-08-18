@@ -21,7 +21,15 @@ export const ElasticPressContext = createContext(initialState);
  *
  * @returns {React.JSXElementConstructor}
  */
-const ElasticPressProvider = ({ children, node, indexName, hitMap, query, perPage }) => {
+const ElasticPressProvider = ({
+	children,
+	node,
+	indexName,
+	hitMap,
+	query,
+	perPage,
+	loadInitialData,
+}) => {
 	invariant(node, 'You must specify a ElasticSearch node');
 	invariant(indexName, 'You must specify a indexName');
 
@@ -32,6 +40,7 @@ const ElasticPressProvider = ({ children, node, indexName, hitMap, query, perPag
 		hitMap: hitMap ?? initialState.hitMap,
 		query: query ?? initialState.query,
 		perPage: perPage ?? initialState.perPage,
+		loadInitialData: loadInitialData ?? initialState.loadInitialData,
 	});
 
 	/**
@@ -63,6 +72,7 @@ ElasticPressProvider.propTypes = {
 	perPage: PropTypes.number,
 	hitMap: PropTypes.func,
 	query: PropTypes.object,
+	loadInitialData: PropTypes.bool,
 	node: PropTypes.string.isRequired,
 	indexName: PropTypes.string.isRequired,
 };
@@ -71,6 +81,7 @@ ElasticPressProvider.defaultProps = {
 	perPage: initialState.perPage,
 	query: initialState.query,
 	hitMap: initialState.hitMap,
+	loadInitialData: initialState.loadInitialData,
 };
 
 export default ElasticPressProvider;
