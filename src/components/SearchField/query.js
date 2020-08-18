@@ -1,4 +1,4 @@
-export const query = {
+export default {
 	from: 0,
 	size: '%PER_PAGE%',
 	sort: [

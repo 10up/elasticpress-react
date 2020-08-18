@@ -1,5 +1,5 @@
 import { SET_RESULTS, SET_LOADING, SET_SEARCH_TERMS } from './actions';
-import { query as esQuery } from '../Posts/query';
+import { query as esQuery } from '../SearchField';
 
 export const initialState = {
 	results: null,
