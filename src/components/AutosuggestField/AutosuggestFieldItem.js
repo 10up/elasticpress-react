@@ -12,9 +12,9 @@ const AutosuggestFieldItem = ({ result, focus, index, setFocus }) => {
 		}
 	}, [focus]);
 
-	const handleNavigate = () => {
+	const handleNavigate = useCallback(() => {
 		document.location = result.permalink;
-	};
+	}, [result.permalink]);
 
 	const handleSelect = useCallback(
 		(event) => {
@@ -25,7 +25,7 @@ const AutosuggestFieldItem = ({ result, focus, index, setFocus }) => {
 			// setting focus to that element when it is selected
 			setFocus(index);
 		},
-		[result, index, setFocus],
+		[index, setFocus, handleNavigate],
 	);
 
 	return (

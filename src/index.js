@@ -1,7 +1,16 @@
 import AutosuggestField from './components/AutosuggestField/AutosuggestField';
 import RelatedContent from './components/RelatedContent/RelatedContent';
-import SearchField from './components/Posts/SearchField';
+import { SearchField } from './components/SearchField';
 import Posts from './components/Posts/Posts';
-import { PostContext, PostContextProvider } from './contexts/PostContext';
+import { ElasticPressProvider } from './components/Provider';
+import { useElasticPress, useSearch } from './hooks';
 
-export { AutosuggestField, RelatedContent, SearchField, PostContext, PostContextProvider, Posts };
+export {
+	AutosuggestField,
+	RelatedContent,
+	SearchField,
+	ElasticPressProvider,
+	useElasticPress,
+	useSearch,
+	Posts,
+};
