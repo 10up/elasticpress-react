@@ -19,6 +19,12 @@ const useSearch = () => {
 				payload: value,
 			});
 
+			// if value being searched is empty string and loadInitialData is true we need to reload initial data
+			if (typeof value === 'string' && value.length === 0 && state.loadInitialData) {
+				refine(null);
+				return;
+			}
+
 			if (typeof value === 'string' && value.length < minSearchCharacters) {
 				return;
 			}
@@ -67,7 +73,7 @@ const useSearch = () => {
 				});
 			});
 		},
-		[dispatch, state.query, state.hitMap, state.perPage, getEndpoint],
+		[dispatch, state.query, state.hitMap, state.perPage, state.loadInitialData, getEndpoint],
 	);
 
 	const loadMore = useCallback(() => {
