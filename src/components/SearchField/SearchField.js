@@ -15,6 +15,7 @@ const SearchField = React.forwardRef(
 
 		const search = useCallback(
 			(value) => {
+				console.log('searching');
 				refine(value, { minSearchCharacters });
 			},
 			[refine, minSearchCharacters],
@@ -22,7 +23,10 @@ const SearchField = React.forwardRef(
 
 		// search if a initial value is provided from parent component
 		useEffect(() => {
-			search(initialValue);
+			console.log(initialValue);
+			if (initialValue) {
+				search(initialValue);
+			}
 		}, [initialValue, search]);
 
 		return (

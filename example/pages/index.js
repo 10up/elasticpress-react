@@ -6,11 +6,29 @@ import {
 	SearchField,
 	Posts,
 	ElasticPressProvider,
+	findResultsState,
 } from '@10up/elasticpress-react';
 
 import styles from '../styles/Home.module.css';
 
-const Home = () => {
+const Search = (props) => (
+	<ElasticPressProvider
+		node="http://elasticpress.test/__elasticsearch"
+		indexName="elasticpresstest-post-1"
+		{...props}
+	>
+		<div>
+			<SearchField />
+		</div>
+
+		<div>
+			<Posts />
+		</div>
+	</ElasticPressProvider>
+);
+
+// eslint-disable-next-line
+const Home = ({ resultsState }) => {
 	return (
 		<div className={styles.container}>
 			<Head>
@@ -31,18 +49,7 @@ const Home = () => {
 				<RelatedContent wpApiRoot="http://elasticpress.test/wp-json" postId={2738} />
 
 				<h2>Search</h2>
-				<ElasticPressProvider
-					node="http://elasticpress.test/__elasticsearch"
-					indexName="elasticpresstest-post-1"
-				>
-					<div>
-						<SearchField />
-					</div>
-
-					<div>
-						<Posts />
-					</div>
-				</ElasticPressProvider>
+				<Search resultsState={resultsState} />
 			</main>
 
 			<footer className={styles.footer}>
@@ -53,5 +60,14 @@ const Home = () => {
 		</div>
 	);
 };
+
+export async function getServerSideProps() {
+	const props = {};
+	const resultsState = await findResultsState(Search, props);
+
+	return {
+		props: { resultsState },
+	};
+}
 
 export default Home;

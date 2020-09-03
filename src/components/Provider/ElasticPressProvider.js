@@ -34,6 +34,7 @@ const ElasticPressProvider = ({
 	searchState,
 	resultsState,
 	query,
+	onSSR,
 }) => {
 	invariant(node, 'You must specify a ElasticSearch node');
 	invariant(indexName, 'You must specify a indexName');
@@ -72,6 +73,10 @@ const ElasticPressProvider = ({
 		dispatch,
 	};
 
+	if (typeof window === 'undefined' && typeof onSSR === 'function') {
+		onSSR(contextValue);
+	}
+
 	return (
 		<ElasticPressContext.Provider value={contextValue}>{children}</ElasticPressContext.Provider>
 	);
@@ -89,6 +94,7 @@ ElasticPressProvider.propTypes = {
 	query: PropTypes.object,
 	node: PropTypes.string.isRequired,
 	indexName: PropTypes.string.isRequired,
+	onSSR: PropTypes.func,
 };
 
 ElasticPressProvider.defaultProps = {
@@ -99,6 +105,7 @@ ElasticPressProvider.defaultProps = {
 		return hit._source;
 	},
 	loadInitialData: true,
+	onSSR: null,
 };
 
 export default ElasticPressProvider;

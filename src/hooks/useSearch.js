@@ -2,8 +2,7 @@ import { useCallback, useEffect } from 'react';
 
 import useElasticPress from './useElasticPress';
 import { setSearchTerm, setLoading, setResults, setOffset } from '../components/Provider';
-import { buildQuery } from '../utils';
-import { post } from '../api';
+import { buildQuery, runEPQuery } from '../utils';
 
 const useSearch = () => {
 	const {
@@ -35,25 +34,17 @@ const useSearch = () => {
 
 			dispatch(setLoading(true));
 
-			const response = await post(
+			const { results, totalResults } = await runEPQuery(
 				buildQuery(query, {
 					searchTerm: value,
 					offset,
 					perPage: search.perPage,
 				}),
 				getEndpoint('search'),
+				hitMap,
 			);
-			let newResults = [];
-			let totalResults = 0;
 
-			if (response.hits && response.hits.hits) {
-				if (response.hits.total && response.hits.total.value) {
-					totalResults = parseInt(response.hits.total.value, 10);
-				}
-				newResults = response.hits.hits.map(hitMap);
-			}
-
-			dispatch(setResults({ results: newResults, totalResults, append }));
+			dispatch(setResults({ results, totalResults, append }));
 			dispatch(setOffset(offset + search.perPage));
 			dispatch(setLoading(false));
 		},
@@ -70,7 +61,9 @@ const useSearch = () => {
 
 	// loadInitialData
 	useEffect(() => {
+		console.log('1 initial data', results.totalResults);
 		if (results.totalResults === null && loadInitialData) {
+			console.log('2 initial data', results.totalResults);
 			refine(null);
 		}
 	}, [refine, results.totalResults, loadInitialData]);
