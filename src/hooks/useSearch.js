@@ -1,26 +1,30 @@
 import { useCallback, useEffect } from 'react';
 
 import useElasticPress from './useElasticPress';
-import { SET_SEARCH_TERMS, SET_LOADING, SET_RESULTS } from '../components/Provider';
-import { replacePlaceholderInObjectValues } from '../utils';
+import { setSearchTerm, setLoading, setResults, setOffset } from '../components/Provider';
+import { buildQuery } from '../utils';
 import { post } from '../api';
 
 const useSearch = () => {
-	const { dispatch, state, getEndpoint } = useElasticPress();
+	const {
+		dispatch,
+		query,
+		state: { search, results },
+		hitMap,
+		loadInitialData,
+		getEndpoint,
+	} = useElasticPress();
 
 	const refine = useCallback(
-		(value, options = {}) => {
+		async (value, options = {}) => {
 			const minSearchCharacters = options?.minSearchCharacters ?? 3;
 			const offset = options?.offset ?? 0;
 			const append = options?.append ?? false;
 
-			dispatch({
-				type: SET_SEARCH_TERMS,
-				payload: value,
-			});
+			dispatch(setSearchTerm(value));
 
 			// if value being searched is empty string and loadInitialData is true we need to reload initial data
-			if (typeof value === 'string' && value.length === 0 && state.loadInitialData) {
+			if (typeof value === 'string' && value.length === 0 && loadInitialData) {
 				refine(null);
 				return;
 			}
@@ -29,69 +33,49 @@ const useSearch = () => {
 				return;
 			}
 
-			dispatch({
-				type: SET_LOADING,
-				payload: true,
-			});
+			dispatch(setLoading(true));
 
-			const newQuery = replacePlaceholderInObjectValues(state.query, {
-				'%SEARCH_TERMS%': value,
-				'%PER_PAGE%': state.perPage,
-			});
+			const response = await post(
+				buildQuery(query, {
+					searchTerm: value,
+					offset,
+					perPage: search.perPage,
+				}),
+				getEndpoint('search'),
+			);
+			let newResults = [];
+			let totalResults = 0;
 
-			newQuery.from = offset;
-
-			if (!value) {
-				delete newQuery.query;
+			if (response.hits && response.hits.hits) {
+				if (response.hits.total && response.hits.total.value) {
+					totalResults = parseInt(response.hits.total.value, 10);
+				}
+				newResults = response.hits.hits.map(hitMap);
 			}
 
-			post(newQuery, getEndpoint('search')).then((response) => {
-				let newResults = [];
-				let totalResults = 0;
-
-				if (response.hits && response.hits.hits) {
-					if (response.hits.total && response.hits.total.value) {
-						totalResults = parseInt(response.hits.total.value, 10);
-					}
-					newResults = response.hits.hits.map(state.hitMap);
-				}
-
-				dispatch({
-					type: SET_RESULTS,
-					payload: {
-						results: newResults,
-						append,
-						totalResults,
-						offset: offset + state.perPage,
-						value,
-					},
-				});
-
-				dispatch({
-					type: SET_LOADING,
-					payload: false,
-				});
-			});
+			dispatch(setResults({ results: newResults, totalResults, append }));
+			dispatch(setOffset(offset + search.perPage));
+			dispatch(setLoading(false));
 		},
-		[dispatch, state.query, state.hitMap, state.perPage, state.loadInitialData, getEndpoint],
+		[dispatch, query, search.perPage, hitMap, loadInitialData, getEndpoint],
 	);
 
 	const loadMore = useCallback(() => {
-		refine(state.searchTerms, {
+		refine(search.searchTerm, {
 			minSearchCharacters: 0,
-			offset: state.offset,
+			offset: search.offset,
 			append: true,
 		});
-	}, [refine, state.offset, state.searchTerms]);
+	}, [refine, search.offset, search.searchTerm]);
 
 	// loadInitialData
 	useEffect(() => {
-		if (state.totalResults === null && state.loadInitialData) {
+		if (results.totalResults === null && loadInitialData) {
 			refine(null);
 		}
-	}, [refine, state.totalResults, state.loadInitialData]);
+	}, [refine, results.totalResults, loadInitialData]);
 
-	return { refine, searchTerms: state.searchTerms, results: state.results, loadMore };
+	return { refine, search, results, loadMore };
 };
 
 export default useSearch;

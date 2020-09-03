@@ -1,30 +1,29 @@
-import { SET_RESULTS, SET_LOADING, SET_SEARCH_TERMS } from './actions';
-import query from '../SearchField/query';
+import { SET_RESULTS, SET_LOADING, SET_SEARCH_TERMS, SET_OFFSET } from './actions';
 
 export const initialState = {
-	results: null,
-	searchTerms: null,
-	perPage: 10,
-	offset: 0,
-	totalResults: null,
-	loading: false,
-	query,
-	hitMap: (hit) => {
-		return hit._source;
+	search: {
+		searchTerm: null,
+		perPage: 10,
+		offset: 0,
 	},
-	node: null,
-	indexName: null,
-	loadInitialData: true,
+	results: {
+		items: null,
+		totalResults: null,
+	},
+	loading: false,
 };
 
 const reducer = (state, action) => {
 	switch (action.type) {
 		case SET_RESULTS: {
-			const { append, ...payload } = action.payload;
+			const { append, totalResults, results } = action.payload;
 			return {
 				...state,
-				...payload,
-				results: append ? state.results.concat(payload.results) : payload.results,
+				results: {
+					...state.results,
+					totalResults,
+					items: append ? state.results.items.concat(results) : results,
+				},
 			};
 		}
 		case SET_LOADING:
@@ -35,7 +34,18 @@ const reducer = (state, action) => {
 		case SET_SEARCH_TERMS:
 			return {
 				...state,
-				searchTerms: action.payload,
+				search: {
+					...state.search,
+					searchTerm: action.payload,
+				},
+			};
+		case SET_OFFSET:
+			return {
+				...state,
+				search: {
+					...state.search,
+					offset: action.payload,
+				},
 			};
 		default:
 			return state;

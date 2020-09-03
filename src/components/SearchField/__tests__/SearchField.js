@@ -26,6 +26,9 @@ describe('SearchField', () => {
 
 		useSearch.mockReturnValue({
 			refine,
+			search: {
+				searchTerm: '',
+			},
 		});
 	});
 
