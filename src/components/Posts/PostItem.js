@@ -3,7 +3,7 @@
  */
 
 import React from 'react';
-import PropTypes from 'prop-types'; /* eslint-disable-line import/no-extraneous-dependencies */
+import PropTypes from 'prop-types';
 
 const PostItem = ({ post }) => {
 	return (

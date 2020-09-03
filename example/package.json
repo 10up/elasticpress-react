@@ -1,26 +1,16 @@
 {
-	"name": "elasticpress-react-example",
-	"homepage": ".",
-	"version": "0.0.0",
-	"private": true,
-	"scripts": {
-		"start": "SKIP_PREFLIGHT_CHECK=true react-scripts start",
-		"build": "react-scripts build",
-		"test": "react-scripts test",
-		"eject": "react-scripts eject"
-	},
-	"dependencies": {
-		"react": "^16.13.1",
-		"@10up/elasticpress-react": "file:.."
-	},
-	"devDependencies": {
-		"react-scripts": "^3.4.1",
-		"@babel/plugin-syntax-object-rest-spread": "^7.8.3"
-	},
-	"browserslist": [
-		">0.2%",
-		"not dead",
-		"not ie <= 11",
-		"not op_mini all"
-	]
+  "name": "example",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "next": "9.5.3",
+    "react": "16.13.1",
+    "react-dom": "16.13.1",
+    "@10up/elasticpress-react": "file:.."
+  }
 }
