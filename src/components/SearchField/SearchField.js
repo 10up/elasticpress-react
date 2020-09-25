@@ -15,7 +15,6 @@ const SearchField = React.forwardRef(
 
 		const search = useCallback(
 			(value) => {
-				console.log('searching');
 				refine(value, { minSearchCharacters });
 			},
 			[refine, minSearchCharacters],
@@ -23,7 +22,6 @@ const SearchField = React.forwardRef(
 
 		// search if a initial value is provided from parent component
 		useEffect(() => {
-			console.log(initialValue);
 			if (initialValue) {
 				search(initialValue);
 			}
@@ -36,7 +34,9 @@ const SearchField = React.forwardRef(
 				placeholder={placeholder}
 				value={searchTerm || ''}
 				name={name}
-				onChange={(event) => search(event.target.value)}
+				onChange={(event) => {
+					search(event.target.value);
+				}}
 				ref={ref}
 			/>
 		);

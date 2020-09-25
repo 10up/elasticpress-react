@@ -61,9 +61,7 @@ const useSearch = () => {
 
 	// loadInitialData
 	useEffect(() => {
-		console.log('1 initial data', results.totalResults);
 		if (results.totalResults === null && loadInitialData) {
-			console.log('2 initial data', results.totalResults);
 			refine(null);
 		}
 	}, [refine, results.totalResults, loadInitialData]);

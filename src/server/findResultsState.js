@@ -2,6 +2,14 @@ import React from 'react';
 import { renderToString } from 'react-dom/server';
 import { buildQuery, runEPQuery } from '../utils';
 
+/**
+ * Runs the necessary EP Queries to populate the results state.
+ *
+ * @param {*} App
+ * @param {*} props
+ *
+ * @returns {object}
+ */
 const findResultsState = async (App, props) => {
 	if (!props) {
 		throw new Error(
@@ -13,6 +21,8 @@ const findResultsState = async (App, props) => {
 
 	renderToString(
 		<App
+			// eslint-disable-next-line react/jsx-props-no-spreading
+			{...props}
 			onSSR={(c) => {
 				context = c;
 			}}
