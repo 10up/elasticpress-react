@@ -34,7 +34,7 @@ const AutosuggestField = ({ initialValue, placeholder, name, minSearchCharacters
 				minSearchCharacters={minSearchCharacters}
 				ref={inputRef}
 			/>
-			{results?.items?.length && (
+			{results?.items?.length > 0 && (
 				<div className={`${styles.dropdownContainer} ep-autosuggest`}>
 					<ul className={`${styles.dropdownList} autosuggest-list`} role="listbox">
 						{results?.items?.map((result, index) => {
