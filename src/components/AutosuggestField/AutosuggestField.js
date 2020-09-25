@@ -12,10 +12,10 @@ import SearchField from '../SearchField/SearchField';
 
 const AutosuggestField = ({ initialValue, placeholder, name, minSearchCharacters }) => {
 	const {
-		state: { perPage, results },
+		state: { search, results },
 	} = useElasticPress();
 
-	const [focus, setFocus] = useRoveFocus(perPage);
+	const [focus, setFocus] = useRoveFocus(search.perPage);
 	const inputRef = useRef(null);
 
 	useEffect(() => {
@@ -34,10 +34,10 @@ const AutosuggestField = ({ initialValue, placeholder, name, minSearchCharacters
 				minSearchCharacters={minSearchCharacters}
 				ref={inputRef}
 			/>
-			{results && results.length ? (
+			{results?.items?.length > 0 && (
 				<div className={`${styles.dropdownContainer} ep-autosuggest`}>
 					<ul className={`${styles.dropdownList} autosuggest-list`} role="listbox">
-						{results.map((result, index) => {
+						{results?.items?.map((result, index) => {
 							return (
 								<AutosuggestFieldItem
 									key={result.ID}
@@ -50,8 +50,6 @@ const AutosuggestField = ({ initialValue, placeholder, name, minSearchCharacters
 						})}
 					</ul>
 				</div>
-			) : (
-				''
 			)}
 		</div>
 	);

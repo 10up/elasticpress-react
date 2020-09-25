@@ -35,7 +35,7 @@ describe('useSearch', () => {
 		});
 
 		expect(api.post).toHaveBeenCalledTimes(1);
-		expect(result.current.searchTerms).toEqual('test');
+		expect(result.current.search.searchTerm).toEqual('test');
 	});
 
 	it('refine does not load new results if bellow minSearchCharacters', async () => {
@@ -51,7 +51,7 @@ describe('useSearch', () => {
 		});
 
 		expect(api.post).toHaveBeenCalledTimes(0);
-		expect(result.current.searchTerms).toEqual('test');
+		expect(result.current.search.searchTerm).toEqual('test');
 	});
 
 	it('refine loads initial if loadInitialData is true and search term is empty', async () => {
@@ -70,7 +70,7 @@ describe('useSearch', () => {
 		});
 
 		expect(api.post).toHaveBeenCalledTimes(2);
-		expect(result.current.searchTerms).toEqual('test');
+		expect(result.current.search.searchTerm).toEqual('test');
 
 		await act(async () => {
 			result.current.refine('', { minSearchCharacters: 3 });
@@ -79,6 +79,6 @@ describe('useSearch', () => {
 		// should trigger another call to api.post because loadInitialData is true
 		// and a empty search term should load the initial set of data
 		expect(api.post).toHaveBeenCalledTimes(3);
-		expect(result.current.searchTerms).toBeNull();
+		expect(result.current.search.searchTerm).toBeNull();
 	});
 });

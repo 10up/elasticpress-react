@@ -4,6 +4,7 @@ import { SearchField } from './components/SearchField';
 import Posts from './components/Posts/Posts';
 import { ElasticPressProvider } from './components/Provider';
 import { useElasticPress, useSearch } from './hooks';
+import { findResultsState } from './server';
 
 export {
 	AutosuggestField,
@@ -13,4 +14,5 @@ export {
 	useElasticPress,
 	useSearch,
 	Posts,
+	findResultsState,
 };

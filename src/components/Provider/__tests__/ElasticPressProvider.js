@@ -3,7 +3,7 @@ import { render } from '@testing-library/react';
 import { renderHook, act } from '@testing-library/react-hooks';
 import { ElasticPressProvider } from '..';
 import { initialState } from '../reducer';
-import { SET_SEARCH_TERMS } from '../actions';
+import { setSearchTerm } from '../actions';
 import { useElasticPress } from '../../../hooks';
 
 const AppTest = () => {
@@ -34,7 +34,7 @@ describe('ElasticPressProvider', () => {
 			wrapper: ElasticPressProviderWrapper,
 		});
 
-		expect(result.current.state).toMatchObject({ ...initialState, node, indexName });
+		expect(result.current.state).toMatchObject(initialState);
 	});
 
 	it('only triggers a re-render if state changes', () => {
@@ -59,7 +59,7 @@ describe('ElasticPressProvider', () => {
 
 		// let's make sure dispatching an action that does change state triggers a re-render
 		act(() => {
-			result.current.dispatch({ type: SET_SEARCH_TERMS, payload: null });
+			result.current.dispatch(setSearchTerm(null));
 		});
 
 		expect(originalState === result.current).not.toBeTruthy();

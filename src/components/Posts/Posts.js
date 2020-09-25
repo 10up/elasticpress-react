@@ -9,25 +9,23 @@ import LoadMore from './LoadMore';
 import { useElasticPress } from '../../hooks';
 
 const Posts = ({ PostItemComponent, noPostsFoundMessage, LoadMoreComponent }) => {
-	const { state } = useElasticPress();
+	const {
+		state: { loading, results },
+	} = useElasticPress();
 
 	return (
-		<section className={`ep-posts${state.loading ? ' loading' : ''}`}>
-			{!state.loading && state.results && state.results.length > 0 && (
+		<section className={`ep-posts${loading ? ' loading' : ''}`}>
+			{!loading && results?.items?.length > 0 && (
 				<ul>
-					{state.results.map((post) => {
+					{results?.items.map((post) => {
 						return <PostItemComponent key={post.ID} post={post} />;
 					})}
 				</ul>
 			)}
 
-			{!state.loading && state.results && !state.results.length && (
-				<p>{noPostsFoundMessage}</p>
-			)}
+			{!loading && !results?.items?.length && <p>{noPostsFoundMessage}</p>}
 
-			{!state.loading && state.results && state.results.length < state.totalResults && (
-				<LoadMoreComponent />
-			)}
+			{!loading && results?.items?.length < results?.totalResults && <LoadMoreComponent />}
 		</section>
 	);
 };

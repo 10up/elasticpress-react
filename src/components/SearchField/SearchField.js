@@ -8,18 +8,23 @@ import { useSearch } from '../../hooks';
 
 const SearchField = React.forwardRef(
 	({ placeholder, initialValue, name, minSearchCharacters }, ref) => {
-		const { refine, searchTerms } = useSearch();
+		const {
+			refine,
+			search: { searchTerm },
+		} = useSearch();
 
 		const search = useCallback(
-			(searchTerms) => {
-				refine(searchTerms, { minSearchCharacters });
+			(value) => {
+				refine(value, { minSearchCharacters });
 			},
 			[refine, minSearchCharacters],
 		);
 
 		// search if a initial value is provided from parent component
 		useEffect(() => {
-			search(initialValue);
+			if (initialValue) {
+				search(initialValue);
+			}
 		}, [initialValue, search]);
 
 		return (
@@ -27,9 +32,11 @@ const SearchField = React.forwardRef(
 				type="search"
 				className="search-field"
 				placeholder={placeholder}
-				value={searchTerms || ''}
+				value={searchTerm || ''}
 				name={name}
-				onChange={(event) => search(event.target.value)}
+				onChange={(event) => {
+					search(event.target.value);
+				}}
 				ref={ref}
 			/>
 		);
