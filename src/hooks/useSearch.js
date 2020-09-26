@@ -25,7 +25,7 @@ const useSearch = () => {
 
 			// if value being searched is empty string and loadInitialData is true we need to reload initial data
 			if (typeof value === 'string' && value.length === 0 && loadInitialData) {
-				refine(null);
+				refine(null, options);
 				return;
 			}
 
@@ -50,7 +50,7 @@ const useSearch = () => {
 			onSearch(searchState);
 
 			dispatch(setResults({ results, totalResults, append }));
-			dispatch(setOffset(Number(offset) + Number(search.perPage)));
+			dispatch(setOffset(offset));
 			dispatch(setLoading(false));
 		},
 		[dispatch, query, onSearch, search.perPage, hitMap, loadInitialData, getEndpoint],
@@ -59,10 +59,10 @@ const useSearch = () => {
 	const loadMore = useCallback(() => {
 		refine(search.searchTerm, {
 			minSearchCharacters: 0,
-			offset: search.offset,
+			offset: Number(search.offset) + Number(search.perPage),
 			append: true,
 		});
-	}, [refine, search.offset, search.searchTerm]);
+	}, [refine, search.offset, search.perPage, search.searchTerm]);
 
 	// loadInitialData
 	useEffect(() => {

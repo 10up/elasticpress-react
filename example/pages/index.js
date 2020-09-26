@@ -14,7 +14,7 @@ import {
 import styles from '../styles/Home.module.css';
 
 const onSearchHandler = ({ searchTerm, offset, perPage }) => {
-	router.push(`/?s=${searchTerm}&offset=${offset}&perPage=${perPage}`);
+	router.push(`/?s=${searchTerm || ''}&offset=${offset}&perPage=${perPage}`);
 };
 
 const Search = (props) => (
