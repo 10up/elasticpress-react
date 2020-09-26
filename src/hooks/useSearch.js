@@ -41,16 +41,21 @@ const useSearch = () => {
 				perPage: search.perPage,
 			};
 
-			const { results, totalResults } = await runEPQuery(
-				buildQuery(query, searchState),
-				getEndpoint('search'),
-				hitMap,
-			);
+			try {
+				const { results, totalResults } = await runEPQuery(
+					buildQuery(query, searchState),
+					getEndpoint('search'),
+					hitMap,
+				);
 
-			onSearch(searchState);
+				onSearch(searchState);
 
-			dispatch(setResults({ results, totalResults, append }));
-			dispatch(setOffset(offset));
+				dispatch(setResults({ results, totalResults, append }));
+				dispatch(setOffset(offset));
+			} catch (exception) {
+				// setError();
+			}
+
 			dispatch(setLoading(false));
 		},
 		[dispatch, query, onSearch, search.perPage, hitMap, loadInitialData, getEndpoint],

@@ -15,9 +15,12 @@ export const post = async (data, endpoint) => {
 		body: JSON.stringify(data),
 	};
 
-	const response = await fetch(endpoint, options);
-
-	return response.json();
+	try {
+		const response = await fetch(endpoint, options);
+		return response.json();
+	} catch {
+		return false;
+	}
 };
 
 /**
@@ -34,7 +37,10 @@ export const get = async (data, endpoint) => {
 			.map((key) => `${key}=${data[key]}`)
 			.join('&');
 	}
-	const response = await fetch(endpointWithParams);
-
-	return response.json();
+	try {
+		const response = await fetch(endpointWithParams);
+		return response.json();
+	} catch {
+		return false;
+	}
 };

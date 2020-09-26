@@ -38,20 +38,27 @@ const findResultsState = async (App, props) => {
 		},
 	} = context;
 
-	const { results, totalResults } = await runEPQuery(
-		buildQuery(query, {
-			searchTerm,
-			offset,
-			perPage,
-		}),
-		getEndpoint('search'),
-		hitMap,
-	);
+	try {
+		const { results, totalResults } = await runEPQuery(
+			buildQuery(query, {
+				searchTerm,
+				offset,
+				perPage,
+			}),
+			getEndpoint('search'),
+			hitMap,
+		);
 
-	return {
-		items: results,
-		totalResults,
-	};
+		return {
+			items: results,
+			totalResults,
+		};
+	} catch (exception) {
+		return {
+			items: {},
+			totalResults: 0,
+		};
+	}
 };
 
 export default findResultsState;
