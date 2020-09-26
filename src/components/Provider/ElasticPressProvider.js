@@ -20,7 +20,7 @@ export const ElasticPressContext = createContext(initialState);
  * @param {Function} [props.hitMap] - A function that maps the result of hits.
  * @param {object} [props.searchState] - The search state (optional);
  * @param {number} [props.perPage] - The number of hits per page.
- 
+ * @param {Function} [props.onSearch] - Callback function triggered whenever a function is executed
  * @param {object} [props.query] - An object describing the ElasticSearch query to perform.
  *
  * @returns {React.JSXElementConstructor}
@@ -35,6 +35,7 @@ const ElasticPressProvider = ({
 	resultsState,
 	query,
 	onSSR,
+	onSearch,
 }) => {
 	invariant(node, 'You must specify a ElasticSearch node');
 	invariant(indexName, 'You must specify a indexName');
@@ -71,6 +72,7 @@ const ElasticPressProvider = ({
 		query,
 		getEndpoint,
 		dispatch,
+		onSearch,
 	};
 
 	if (typeof window === 'undefined' && typeof onSSR === 'function') {
@@ -95,6 +97,7 @@ ElasticPressProvider.propTypes = {
 	node: PropTypes.string.isRequired,
 	indexName: PropTypes.string.isRequired,
 	onSSR: PropTypes.func,
+	onSearch: PropTypes.func,
 };
 
 ElasticPressProvider.defaultProps = {
@@ -106,6 +109,7 @@ ElasticPressProvider.defaultProps = {
 	},
 	loadInitialData: true,
 	onSSR: null,
+	onSearch: () => {},
 };
 
 export default ElasticPressProvider;

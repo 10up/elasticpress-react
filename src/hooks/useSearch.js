@@ -12,6 +12,7 @@ const useSearch = () => {
 		hitMap,
 		loadInitialData,
 		getEndpoint,
+		onSearch,
 	} = useElasticPress();
 
 	const refine = useCallback(
@@ -34,21 +35,25 @@ const useSearch = () => {
 
 			dispatch(setLoading(true));
 
+			const searchState = {
+				searchTerm: value,
+				offset,
+				perPage: search.perPage,
+			};
+
 			const { results, totalResults } = await runEPQuery(
-				buildQuery(query, {
-					searchTerm: value,
-					offset,
-					perPage: search.perPage,
-				}),
+				buildQuery(query, searchState),
 				getEndpoint('search'),
 				hitMap,
 			);
 
+			onSearch(searchState);
+
 			dispatch(setResults({ results, totalResults, append }));
-			dispatch(setOffset(offset + search.perPage));
+			dispatch(setOffset(Number(offset) + Number(search.perPage)));
 			dispatch(setLoading(false));
 		},
-		[dispatch, query, search.perPage, hitMap, loadInitialData, getEndpoint],
+		[dispatch, query, onSearch, search.perPage, hitMap, loadInitialData, getEndpoint],
 	);
 
 	const loadMore = useCallback(() => {
