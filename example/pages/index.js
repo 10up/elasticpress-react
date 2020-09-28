@@ -13,8 +13,8 @@ import {
 
 import styles from '../styles/Home.module.css';
 
-const onSearchHandler = ({ searchTerm, offset, perPage }) => {
-	router.push(`/?s=${searchTerm || ''}&offset=${offset}&perPage=${perPage}`);
+const onSearchHandler = ({ searchTerm, perPage }) => {
+	router.push(`/?s=${searchTerm || ''}&perPage=${perPage}`);
 };
 
 const Search = (props) => (
@@ -70,9 +70,8 @@ const Home = ({ searchState, resultsState }) => {
 
 export async function getServerSideProps({ query }) {
 	const searchState = {
-		searchTerm: query.s || '',
+		searchTerm: query.s || null,
 		perPage: query.perPage || 10,
-		offset: query.offset || 0,
 	};
 
 	const resultsState = await findResultsState(Search, {

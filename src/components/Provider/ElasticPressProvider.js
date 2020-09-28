@@ -12,6 +12,19 @@ export const ElasticPressContext = createContext(initialState);
  */
 
 /**
+ * Merges two objects
+ *
+ * @param {object} provided The provided object.
+ * @param {object} defaultValues The default values
+ *
+ * @returns {object}
+ */
+const merge = (provided, defaultValues) => ({
+	...defaultValues,
+	...provided,
+});
+
+/**
  * The ElasticPress Provider
  *
  * @param {object} props - The components props.
@@ -42,8 +55,8 @@ const ElasticPressProvider = ({
 
 	const [state, dispatch] = useReducer(reducer, {
 		...initialState,
-		search: searchState ?? initialState.state,
-		results: resultsState ?? initialState.results,
+		search: searchState ? merge(searchState, initialState.search) : initialState.search,
+		results: resultsState ? merge(searchState, initialState.results) : initialState.results,
 	});
 
 	/**

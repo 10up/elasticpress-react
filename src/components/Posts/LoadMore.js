@@ -9,8 +9,7 @@ const LoadMore = ({ buttonText }) => {
 	return (
 		<button
 			className={`${styles.button} ep-load-more`}
-			onClick={(e) => {
-				e.preventDefault();
+			onClick={() => {
 				loadMore();
 			}}
 			type="button"
