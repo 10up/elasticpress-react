@@ -7,7 +7,13 @@ const LoadMore = ({ buttonText }) => {
 	const { loadMore } = useSearch();
 
 	return (
-		<button className={`${styles.button} ep-load-more`} onClick={loadMore} type="button">
+		<button
+			className={`${styles.button} ep-load-more`}
+			onClick={() => {
+				loadMore();
+			}}
+			type="button"
+		>
 			{buttonText}
 		</button>
 	);

@@ -1,5 +1,7 @@
 import React from 'react';
 import Head from 'next/head';
+import router from 'next/router';
+
 import {
 	AutosuggestField,
 	RelatedContent,
@@ -11,10 +13,15 @@ import {
 
 import styles from '../styles/Home.module.css';
 
+const onSearchHandler = ({ searchTerm, perPage }) => {
+	router.push(`/?s=${searchTerm || ''}&perPage=${perPage}`);
+};
+
 const Search = (props) => (
 	<ElasticPressProvider
 		node="http://elasticpress.test/__elasticsearch"
 		indexName="elasticpresstest-post-1"
+		onSearch={onSearchHandler}
 		{...props}
 	>
 		<div>
@@ -28,7 +35,7 @@ const Search = (props) => (
 );
 
 // eslint-disable-next-line
-const Home = ({ resultsState }) => {
+const Home = ({ searchState, resultsState }) => {
 	return (
 		<div className={styles.container}>
 			<Head>
@@ -49,7 +56,7 @@ const Home = ({ resultsState }) => {
 				<RelatedContent wpApiRoot="http://elasticpress.test/wp-json" postId={2738} />
 
 				<h2>Search</h2>
-				<Search resultsState={resultsState} />
+				<Search resultsState={resultsState} searchState={searchState} />
 			</main>
 
 			<footer className={styles.footer}>
@@ -61,12 +68,18 @@ const Home = ({ resultsState }) => {
 	);
 };
 
-export async function getServerSideProps() {
-	const props = {};
-	const resultsState = await findResultsState(Search, props);
+export async function getServerSideProps({ query }) {
+	const searchState = {
+		searchTerm: query.s || null,
+		perPage: query.perPage || 10,
+	};
+
+	const resultsState = await findResultsState(Search, {
+		searchState,
+	});
 
 	return {
-		props: { resultsState },
+		props: { searchState, resultsState },
 	};
 }
 
