@@ -12,6 +12,7 @@ const useSearch = () => {
 		hitMap,
 		loadInitialData,
 		getEndpoint,
+		onSearch,
 	} = useElasticPress();
 
 	const refine = useCallback(
@@ -24,7 +25,7 @@ const useSearch = () => {
 
 			// if value being searched is empty string and loadInitialData is true we need to reload initial data
 			if (typeof value === 'string' && value.length === 0 && loadInitialData) {
-				refine(null);
+				refine(null, options);
 				return;
 			}
 
@@ -34,30 +35,39 @@ const useSearch = () => {
 
 			dispatch(setLoading(true));
 
-			const { results, totalResults } = await runEPQuery(
-				buildQuery(query, {
-					searchTerm: value,
-					offset,
-					perPage: search.perPage,
-				}),
-				getEndpoint('search'),
-				hitMap,
-			);
+			const searchState = {
+				searchTerm: value,
+				offset,
+				perPage: search.perPage,
+			};
 
-			dispatch(setResults({ results, totalResults, append }));
-			dispatch(setOffset(offset + search.perPage));
+			try {
+				const { results, totalResults } = await runEPQuery(
+					buildQuery(query, searchState),
+					getEndpoint('search'),
+					hitMap,
+				);
+
+				onSearch(searchState);
+
+				dispatch(setResults({ results, totalResults, append }));
+				dispatch(setOffset(offset));
+			} catch (exception) {
+				// setError();
+			}
+
 			dispatch(setLoading(false));
 		},
-		[dispatch, query, search.perPage, hitMap, loadInitialData, getEndpoint],
+		[dispatch, query, onSearch, search.perPage, hitMap, loadInitialData, getEndpoint],
 	);
 
 	const loadMore = useCallback(() => {
 		refine(search.searchTerm, {
 			minSearchCharacters: 0,
-			offset: search.offset,
+			offset: Number(search.offset) + Number(search.perPage),
 			append: true,
 		});
-	}, [refine, search.offset, search.searchTerm]);
+	}, [refine, search.offset, search.perPage, search.searchTerm]);
 
 	// loadInitialData
 	useEffect(() => {
