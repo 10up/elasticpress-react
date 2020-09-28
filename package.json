@@ -1,6 +1,6 @@
 {
 	"name": "@10up/elasticpress-react",
-	"version": "1.2.0-next",
+	"version": "2.0.0-rc.1",
 	"description": "React components for supercharging your headless WordPress website with ElasticPress.",
 	"author": {
 		"name": "10up",
