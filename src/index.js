@@ -5,6 +5,8 @@ import Posts from './components/Posts/Posts';
 import { ElasticPressProvider } from './components/Provider';
 import { useElasticPress, useSearch } from './hooks';
 import { findResultsState } from './server';
+import { buildQuery, runEPQuery } from './utils';
+import { searchQuery } from './queries';
 
 export {
 	AutosuggestField,
@@ -15,4 +17,7 @@ export {
 	useSearch,
 	Posts,
 	findResultsState,
+	buildQuery,
+	runEPQuery,
+	searchQuery,
 };
