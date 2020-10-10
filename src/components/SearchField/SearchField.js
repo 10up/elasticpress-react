@@ -2,22 +2,25 @@
  * ElasticPress search field component
  */
 
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
+import debounce from 'lodash.debounce';
 import { useSearch } from '../../hooks';
 
 const SearchField = React.forwardRef(
-	({ placeholder, initialValue, name, minSearchCharacters }, ref) => {
-		const {
-			refine,
-			search: { searchTerm },
-		} = useSearch();
+	({ placeholder, initialValue, name, minSearchCharacters, debounceMs }, ref) => {
+		const [localSearchTerm, setLocalSearchTerm] = useState('');
+		const { refine } = useSearch();
 
 		const search = useCallback(
-			(value) => {
-				refine(value, { minSearchCharacters });
-			},
-			[refine, minSearchCharacters],
+			debounce(
+				(value) => {
+					refine(value, { minSearchCharacters });
+				},
+				debounceMs,
+				{ leading: !!debounceMs, maxWait: 500 },
+			),
+			[refine, minSearchCharacters, debounceMs],
 		);
 
 		// search if a initial value is provided from parent component
@@ -32,10 +35,12 @@ const SearchField = React.forwardRef(
 				type="search"
 				className="search-field"
 				placeholder={placeholder}
-				value={searchTerm || ''}
+				value={localSearchTerm || ''}
 				name={name}
 				onChange={(event) => {
-					search(event.target.value);
+					const { value } = event.target;
+					setLocalSearchTerm(value);
+					search(value);
 				}}
 				ref={ref}
 			/>
@@ -48,6 +53,7 @@ SearchField.defaultProps = {
 	placeholder: 'Search...',
 	initialValue: '',
 	minSearchCharacters: 3,
+	debounceMs: 0,
 };
 
 SearchField.propTypes = {
@@ -55,6 +61,7 @@ SearchField.propTypes = {
 	initialValue: PropTypes.string,
 	placeholder: PropTypes.string,
 	minSearchCharacters: PropTypes.number,
+	debounceMs: PropTypes.number,
 };
 
 export default SearchField;

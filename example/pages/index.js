@@ -25,7 +25,7 @@ const Search = (props) => (
 		{...props}
 	>
 		<div>
-			<SearchField />
+			<SearchField debounceMs={100} />
 		</div>
 
 		<div>

@@ -1,6 +1,6 @@
 {
 	"name": "@10up/elasticpress-react",
-	"version": "2.0.0-rc.1",
+	"version": "2.0.0-rc.2",
 	"description": "React components for supercharging your headless WordPress website with ElasticPress.",
 	"author": {
 		"name": "10up",
@@ -92,6 +92,7 @@
 	],
 	"dependencies": {
 		"invariant": "^2.2.4",
+		"lodash.debounce": "^4.0.8",
 		"lodash.isarray": "^4.0.0",
 		"lodash.isobject": "^3.0.2",
 		"lodash.mapvalues": "^4.6.0"
