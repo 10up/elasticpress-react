@@ -3,6 +3,7 @@ import invariant from 'invariant';
 import PropTypes from 'prop-types';
 import reducer, { initialState } from './reducer';
 import { searchQuery } from '../../queries';
+import { getESEndpoint } from '../../utils';
 
 export const ElasticPressContext = createContext(initialState);
 
@@ -67,11 +68,10 @@ const ElasticPressProvider = ({
 	 */
 	const getEndpoint = useCallback(
 		(type = 'search') => {
-			if (type === 'search') {
-				return `${node}/${indexName}/_doc/_search`;
-			}
-
-			return '';
+			return getESEndpoint(type, {
+				node,
+				indexName,
+			});
 		},
 		[indexName, node],
 	);
