@@ -23,7 +23,7 @@ describe('SearchField', () => {
 	let refine;
 	beforeEach(() => {
 		refine = jest.fn();
-
+		jest.useFakeTimers();
 		useSearch.mockReturnValue({
 			refine,
 			search: {
@@ -45,7 +45,10 @@ describe('SearchField', () => {
 			});
 		});
 
+		jest.runAllTimers();
+
 		expect(refine).toHaveBeenCalledWith('test', { minSearchCharacters: 3 });
+
 		expect(refine).toHaveBeenCalledTimes(1);
 	});
 
@@ -61,9 +64,12 @@ describe('SearchField', () => {
 		// rather using userEvent.type
 		fireEvent.change(searchField, { target: { value: 'test' } });
 
+		jest.runAllTimers();
+
 		expect(refine).toHaveBeenLastCalledWith('test', { minSearchCharacters: 3 });
 
 		fireEvent.change(searchField, { target: { value: 'test test' } });
+		jest.runAllTimers();
 
 		expect(refine).toHaveBeenLastCalledWith('test test', { minSearchCharacters: 3 });
 	});

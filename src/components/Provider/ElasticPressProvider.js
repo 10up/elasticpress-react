@@ -2,7 +2,8 @@ import React, { useReducer, createContext, useCallback } from 'react';
 import invariant from 'invariant';
 import PropTypes from 'prop-types';
 import reducer, { initialState } from './reducer';
-import query from '../SearchField/query';
+import { searchQuery } from '../../queries';
+import { getESEndpoint } from '../../utils';
 
 export const ElasticPressContext = createContext(initialState);
 
@@ -67,11 +68,10 @@ const ElasticPressProvider = ({
 	 */
 	const getEndpoint = useCallback(
 		(type = 'search') => {
-			if (type === 'search') {
-				return `${node}/${indexName}/_doc/_search`;
-			}
-
-			return '';
+			return getESEndpoint(type, {
+				node,
+				indexName,
+			});
 		},
 		[indexName, node],
 	);
@@ -116,7 +116,7 @@ ElasticPressProvider.propTypes = {
 ElasticPressProvider.defaultProps = {
 	searchState: initialState.search,
 	resultsState: initialState.resultsState,
-	query,
+	query: searchQuery,
 	hitMap: (hit) => {
 		return hit._source;
 	},
