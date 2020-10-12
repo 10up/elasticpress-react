@@ -9,9 +9,10 @@
 export const post = async (data, endpoint, searchTerm = '') => {
 	const options = {
 		method: 'POST',
+		mode: 'cors',
 		credentials: 'same-origin',
 		headers: {
-			'Content-Type': 'application/json',
+			'Content-Type': 'application/json; charset=utf-8',
 		},
 		body: JSON.stringify(data),
 	};
@@ -21,6 +22,7 @@ export const post = async (data, endpoint, searchTerm = '') => {
 	}
 
 	const response = await fetch(endpoint, options);
+
 	return response.json();
 };
 

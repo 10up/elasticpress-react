@@ -44,7 +44,6 @@ const ElasticPressProvider = ({
 	children,
 	node,
 	indexName,
-	elasticpressio,
 	hitMap,
 	loadInitialData,
 	searchState,
@@ -73,10 +72,9 @@ const ElasticPressProvider = ({
 			return getESEndpoint(type, {
 				node,
 				indexName,
-				elasticpressio,
 			});
 		},
-		[indexName, node, elasticpressio],
+		[indexName, node],
 	);
 
 	const contextValue = {
@@ -112,7 +110,6 @@ ElasticPressProvider.propTypes = {
 	query: PropTypes.object,
 	node: PropTypes.string.isRequired,
 	indexName: PropTypes.string.isRequired,
-	elasticpressio: PropTypes.string,
 	onSSR: PropTypes.func,
 	onSearch: PropTypes.func,
 };
@@ -120,7 +117,6 @@ ElasticPressProvider.propTypes = {
 ElasticPressProvider.defaultProps = {
 	searchState: initialState.search,
 	resultsState: initialState.resultsState,
-	elasticpressio: null,
 	query: searchQuery,
 	hitMap: (hit) => {
 		return hit._source;

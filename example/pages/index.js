@@ -19,8 +19,8 @@ const onSearchHandler = ({ searchTerm, perPage }) => {
 
 const Search = (props) => (
 	<ElasticPressProvider
-		node="http://elasticpress.test/__elasticsearch"
-		indexName="elasticpresstest-post-1"
+		node="https://thorstentestessential.clients.hosted-elasticpress.io"
+		indexName="thorstentestessential--demoelasticpressio-post-1"
 		onSearch={onSearchHandler}
 		{...props}
 	>
@@ -53,7 +53,7 @@ const Home = ({ searchState, resultsState }) => {
 				</ElasticPressProvider>
 
 				<h2>Related Posts</h2>
-				<RelatedContent wpApiRoot="http://elasticpress.test/wp-json" postId={2738} />
+				<RelatedContent wpApiRoot="https://elasticpress.test/wp-json" postId={2738} />
 
 				<h2>Search</h2>
 				<Search resultsState={resultsState} searchState={searchState} />

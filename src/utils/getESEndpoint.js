@@ -10,14 +10,14 @@
  * @returns {string}
  */
 export default (type = 'search', config) => {
-	const { node, indexName, elasticpressio } = config;
+	const { node, indexName } = config;
 
-	if (type === 'search' && !elasticpressio) {
+	if (type === 'search' && !node.includes('elasticpress.io')) {
 		return `${node}/${indexName}/_doc/_search`;
 	}
 
-	if (type === 'search' && elasticpressio) {
-		return config.elasticpressio;
+	if (type === 'search' && node.includes('elasticpress.io')) {
+		return `${node}/${indexName}/autosuggest`;
 	}
 
 	return '';
