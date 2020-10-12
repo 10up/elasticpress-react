@@ -5,7 +5,7 @@ import Posts from './components/Posts/Posts';
 import { ElasticPressProvider } from './components/Provider';
 import { useElasticPress, useSearch } from './hooks';
 import { findResultsState } from './server';
-import { buildQuery, runEPQuery } from './utils';
+import { buildQuery, runEPQuery, getESEndpoint } from './utils';
 import { searchQuery } from './queries';
 
 export {
@@ -20,4 +20,5 @@ export {
 	buildQuery,
 	runEPQuery,
 	searchQuery,
+	getESEndpoint,
 };
