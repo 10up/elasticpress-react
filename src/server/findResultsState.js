@@ -40,6 +40,7 @@ const findResultsState = async (App, props) => {
 
 	try {
 		const { results, totalResults } = await runEPQuery(
+			searchTerm,
 			buildQuery(query, {
 				searchTerm,
 				offset,

@@ -5,11 +5,12 @@ import { post } from '../api';
  *
  * @param {object} query The final ElasticSearch Query
  * @param {string} endpoint
+ * @param {string} searchTerm
  * @param {Function} hitMap
  * @returns {object} ElasticSearch query object.
  */
-const runEPQuery = async (query, endpoint, hitMap) => {
-	const response = await post(query, endpoint);
+const runEPQuery = async (searchTerm, query, endpoint, hitMap) => {
+	const response = await post(query, endpoint, searchTerm);
 	let results = [];
 	let totalResults = 0;
 

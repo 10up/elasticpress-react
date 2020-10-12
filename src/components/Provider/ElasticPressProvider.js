@@ -31,6 +31,7 @@ const merge = (provided, defaultValues) => ({
  * @param {object} props - The components props.
  * @param {string} [props.node] - The ElasticSearch node.
  * @param {string} [props.indexName] - The ElasticSearch index name.
+ * @param {string} [props.elasticpressio] - The elasticpressio endpoint (if used)
  * @param {Function} [props.hitMap] - A function that maps the result of hits.
  * @param {object} [props.searchState] - The search state (optional);
  * @param {number} [props.perPage] - The number of hits per page.
@@ -43,6 +44,7 @@ const ElasticPressProvider = ({
 	children,
 	node,
 	indexName,
+	elasticpressio,
 	hitMap,
 	loadInitialData,
 	searchState,
@@ -57,7 +59,7 @@ const ElasticPressProvider = ({
 	const [state, dispatch] = useReducer(reducer, {
 		...initialState,
 		search: searchState ? merge(searchState, initialState.search) : initialState.search,
-		results: resultsState ? merge(searchState, initialState.results) : initialState.results,
+		results: resultsState ? merge(resultsState, initialState.results) : initialState.results,
 	});
 
 	/**
@@ -71,9 +73,10 @@ const ElasticPressProvider = ({
 			return getESEndpoint(type, {
 				node,
 				indexName,
+				elasticpressio,
 			});
 		},
-		[indexName, node],
+		[indexName, node, elasticpressio],
 	);
 
 	const contextValue = {
@@ -109,6 +112,7 @@ ElasticPressProvider.propTypes = {
 	query: PropTypes.object,
 	node: PropTypes.string.isRequired,
 	indexName: PropTypes.string.isRequired,
+	elasticpressio: PropTypes.string,
 	onSSR: PropTypes.func,
 	onSearch: PropTypes.func,
 };
@@ -116,6 +120,7 @@ ElasticPressProvider.propTypes = {
 ElasticPressProvider.defaultProps = {
 	searchState: initialState.search,
 	resultsState: initialState.resultsState,
+	elasticpressio: null,
 	query: searchQuery,
 	hitMap: (hit) => {
 		return hit._source;

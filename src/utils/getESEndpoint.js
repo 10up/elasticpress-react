@@ -12,11 +12,11 @@
 export default (type = 'search', config) => {
 	const { node, indexName, elasticpressio } = config;
 
-	if (type === 'search' && typeof elasticpressio === 'undefined') {
+	if (type === 'search' && !elasticpressio) {
 		return `${node}/${indexName}/_doc/_search`;
 	}
 
-	if (type === 'search' && typeof elasticpressio === 'string') {
+	if (type === 'search' && elasticpressio) {
 		return config.elasticpressio;
 	}
 

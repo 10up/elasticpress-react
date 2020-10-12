@@ -43,6 +43,7 @@ const useSearch = () => {
 
 			try {
 				const { results, totalResults } = await runEPQuery(
+					searchState.searchTerm,
 					buildQuery(query, searchState),
 					getEndpoint('search'),
 					hitMap,
