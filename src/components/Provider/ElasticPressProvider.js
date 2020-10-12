@@ -57,7 +57,7 @@ const ElasticPressProvider = ({
 	const [state, dispatch] = useReducer(reducer, {
 		...initialState,
 		search: searchState ? merge(searchState, initialState.search) : initialState.search,
-		results: resultsState ? merge(searchState, initialState.results) : initialState.results,
+		results: resultsState ? merge(resultsState, initialState.results) : initialState.results,
 	});
 
 	/**

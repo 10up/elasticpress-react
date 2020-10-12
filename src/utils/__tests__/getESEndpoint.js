@@ -16,8 +16,8 @@ describe('getESEndpoint', () => {
 		expect(
 			getESEndpoint('search', {
 				...config,
-				elasticpressio: 'http://esiohost.com/autosuggest',
+				node: 'http://client.hosted-elasticpress.io',
 			}),
-		).toEqual('http://esiohost.com/autosuggest');
+		).toEqual('http://client.hosted-elasticpress.io/post-1/autosuggest');
 	});
 });
