@@ -55,6 +55,7 @@ const findResultsState = async (App, props) => {
 			totalResults,
 		};
 	} catch (exception) {
+		console.log('exception', exception);
 		return {
 			items: {},
 			totalResults: 0,

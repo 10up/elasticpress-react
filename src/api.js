@@ -17,7 +17,7 @@ export const post = async (data, endpoint, searchTerm = '') => {
 		body: JSON.stringify(data),
 	};
 
-	if (endpoint.includes('elasticpress.io') && searchTerm) {
+	if (endpoint.includes('elasticpress.io') && typeof searchTerm === 'string') {
 		options.headers['EP-Search-Term'] = searchTerm;
 	}
 

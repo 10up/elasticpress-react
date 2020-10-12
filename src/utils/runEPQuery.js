@@ -9,15 +9,17 @@ import { post } from '../api';
  * @param {Function} hitMap
  * @returns {object} ElasticSearch query object.
  */
-const runEPQuery = async (searchTerm, query, endpoint, hitMap) => {
+const runEPQuery = async (searchTerm = '', query, endpoint, hitMap) => {
 	const response = await post(query, endpoint, searchTerm);
+
 	let results = [];
 	let totalResults = 0;
 
 	if (response.hits && response.hits.hits) {
-		if (response.hits.total && response.hits.total.value) {
-			totalResults = parseInt(response.hits.total.value, 10);
+		if (response.hits.total) {
+			totalResults = parseInt(response?.hits?.total?.value || response?.hits?.total, 10);
 		}
+
 		results = response.hits.hits.map(hitMap);
 	}
 
