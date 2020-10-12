@@ -31,7 +31,6 @@ const merge = (provided, defaultValues) => ({
  * @param {object} props - The components props.
  * @param {string} [props.node] - The ElasticSearch node.
  * @param {string} [props.indexName] - The ElasticSearch index name.
- * @param {string} [props.elasticpressio] - The elasticpressio endpoint (if used)
  * @param {Function} [props.hitMap] - A function that maps the result of hits.
  * @param {object} [props.searchState] - The search state (optional);
  * @param {number} [props.perPage] - The number of hits per page.
