@@ -1,27 +1,17 @@
 {
-	"name": "elasticpress-react-example",
-	"homepage": ".",
-	"version": "0.0.0",
-	"private": true,
-	"scripts": {
-		"start": "node ../node_modules/react-scripts/bin/react-scripts.js start",
-		"build": "node ../node_modules/react-scripts/bin/react-scripts.js build",
-		"test": "node ../node_modules/react-scripts/bin/react-scripts.js test",
-		"eject": "node ../node_modules/react-scripts/bin/react-scripts.js eject"
-	},
-	"dependencies": {
-		"react": "file:../node_modules/react",
-		"react-dom": "file:../node_modules/react-dom",
-		"react-scripts": "file:../node_modules/react-scripts",
-		"@10up/elasticpress-react": "file:.."
-	},
-	"devDependencies": {
-		"@babel/plugin-syntax-object-rest-spread": "^7.8.3"
-	},
-	"browserslist": [
-		">0.2%",
-		"not dead",
-		"not ie <= 11",
-		"not op_mini all"
-	]
+  "name": "example",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3001",
+    "build": "next build",
+    "start": "next start",
+    "postinstall": "(cd .. && npm link example/node_modules/react)"
+  },
+  "dependencies": {
+    "next": "9.5.3",
+    "react": "16.13.1",
+    "react-dom": "16.13.1",
+    "@10up/elasticpress-react": "file:.."
+  }
 }

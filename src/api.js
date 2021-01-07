@@ -3,17 +3,23 @@
  *
  * @param {*} data Data to post
  * @param {*} endpoint AJAX endpoint
+ * @param {string} searchTerm The search term (optional). Required for elasticpress.io
  * @returns {Promise}
  */
-export const post = async (data, endpoint) => {
+export const post = async (data, endpoint, searchTerm = '') => {
 	const options = {
 		method: 'POST',
+		mode: 'cors',
 		credentials: 'same-origin',
 		headers: {
-			'Content-Type': 'application/json',
+			'Content-Type': 'application/json; charset=utf-8',
 		},
 		body: JSON.stringify(data),
 	};
+
+	if (endpoint.includes('elasticpress.io') && typeof searchTerm === 'string') {
+		options.headers['EP-Search-Term'] = searchTerm;
+	}
 
 	const response = await fetch(endpoint, options);
 
@@ -34,7 +40,7 @@ export const get = async (data, endpoint) => {
 			.map((key) => `${key}=${data[key]}`)
 			.join('&');
 	}
-	const response = await fetch(endpointWithParams);
 
+	const response = await fetch(endpointWithParams);
 	return response.json();
 };

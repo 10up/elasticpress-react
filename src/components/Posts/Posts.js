@@ -2,38 +2,30 @@
  * ElasticPress related content component
  */
 
-import React, { useContext } from 'react';
-import PropTypes from 'prop-types'; /* eslint-disable-line import/no-extraneous-dependencies */
-import { PostContext } from '../../contexts/PostContext';
+import React from 'react';
+import PropTypes from 'prop-types';
 import PostItem from './PostItem';
 import LoadMore from './LoadMore';
+import { useElasticPress } from '../../hooks';
 
 const Posts = ({ PostItemComponent, noPostsFoundMessage, LoadMoreComponent }) => {
-	const [state] = useContext(PostContext);
+	const {
+		state: { loading, results },
+	} = useElasticPress();
 
 	return (
-		<section className={`ep-posts${state.loading ? ' loading' : ''}`}>
-			{!state.loading && state.results && state.results.length ? (
+		<section className={`ep-posts${loading ? ' loading' : ''}`}>
+			{!loading && results?.items?.length > 0 && (
 				<ul>
-					{state.results.map((post) => {
+					{results?.items.map((post) => {
 						return <PostItemComponent key={post.ID} post={post} />;
 					})}
 				</ul>
-			) : (
-				''
 			)}
 
-			{!state.loading && state.results && !state.results.length ? (
-				<p>{noPostsFoundMessage}</p>
-			) : (
-				''
-			)}
+			{!loading && !results?.items?.length && <p>{noPostsFoundMessage}</p>}
 
-			{!state.loading && state.results && state.results.length < state.totalResults ? (
-				<LoadMoreComponent />
-			) : (
-				''
-			)}
+			{!loading && results?.items?.length < results?.totalResults && <LoadMoreComponent />}
 		</section>
 	);
 };

@@ -1,9 +1,8 @@
 /**
  * ElasticPress related content component
  */
-
-import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types'; /* eslint-disable-line import/no-extraneous-dependencies */
+import React, { useState, useEffect, useCallback } from 'react';
+import PropTypes from 'prop-types';
 import { get } from '../../api';
 import { replacePlaceholderInObjectValues } from '../../utils';
 
@@ -11,7 +10,7 @@ const RelatedContent = ({ query, wpApiRoot, numItems, postId }) => {
 	const [results, setResults] = useState(false);
 	const [loading, setLoading] = useState(false);
 
-	const getResults = () => {
+	const getResults = useCallback(() => {
 		let newQuery = replacePlaceholderInObjectValues(query, '%POST_ID%', postId);
 
 		newQuery = replacePlaceholderInObjectValues(newQuery, '%NUM_ITEMS%', numItems);
@@ -25,11 +24,11 @@ const RelatedContent = ({ query, wpApiRoot, numItems, postId }) => {
 				setLoading(false);
 			},
 		);
-	};
+	}, [postId, query, wpApiRoot, numItems]);
 
 	useEffect(() => {
 		getResults();
-	}, [postId, query, wpApiRoot, numItems]);
+	}, [getResults]);
 
 	return (
 		<section className={`ep-related-content${loading ? ' loading' : ''}`}>
