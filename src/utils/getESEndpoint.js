@@ -10,10 +10,10 @@
  * @returns {string}
  */
 export default (type = 'search', config) => {
-	const { node, indexName } = config;
+	const { node, indexName, endpoint } = config;
 
 	if (type === 'search' && !node.includes('elasticpress.io')) {
-		return `${node}/${indexName}/_doc/_search`;
+		return `${node}/${indexName}${endpoint}`;
 	}
 
 	if (type === 'search' && node.includes('elasticpress.io')) {

@@ -10,7 +10,14 @@ import useRoveFocus from '../../hooks/useRoveFocus';
 import { useElasticPress } from '../../hooks';
 import SearchField from '../SearchField/SearchField';
 
-const AutosuggestField = ({ initialValue, placeholder, name, minSearchCharacters }) => {
+const AutosuggestField = ({
+	initialValue,
+	placeholder,
+	name,
+	minSearchCharacters,
+	searchTerm,
+	resultFilter,
+}) => {
 	const {
 		state: { search, results },
 	} = useElasticPress();
@@ -33,6 +40,7 @@ const AutosuggestField = ({ initialValue, placeholder, name, minSearchCharacters
 				placeholder={placeholder}
 				minSearchCharacters={minSearchCharacters}
 				ref={inputRef}
+				searchTerm={searchTerm}
 			/>
 			{results?.items?.length > 0 && (
 				<div className={`${styles.dropdownContainer} ep-autosuggest`}>
@@ -44,7 +52,7 @@ const AutosuggestField = ({ initialValue, placeholder, name, minSearchCharacters
 									setFocus={setFocus}
 									index={index}
 									focus={focus === index}
-									result={result}
+									result={resultFilter(result)}
 								/>
 							);
 						})}
@@ -60,6 +68,8 @@ AutosuggestField.defaultProps = {
 	placeholder: 'Search...',
 	initialValue: '',
 	minSearchCharacters: 3,
+	searchTerm: '',
+	resultFilter: (item) => item,
 };
 
 AutosuggestField.propTypes = {
@@ -67,6 +77,8 @@ AutosuggestField.propTypes = {
 	initialValue: PropTypes.string,
 	placeholder: PropTypes.string,
 	minSearchCharacters: PropTypes.number,
+	searchTerm: PropTypes.string,
+	resultFilter: PropTypes.func,
 };
 
 export default AutosuggestField;
