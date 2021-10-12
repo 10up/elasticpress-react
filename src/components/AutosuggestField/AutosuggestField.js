@@ -17,6 +17,7 @@ const AutosuggestField = ({
 	minSearchCharacters,
 	searchTerm,
 	onItemRender,
+	collapsed,
 }) => {
 	const {
 		state: { search, results },
@@ -42,7 +43,7 @@ const AutosuggestField = ({
 				ref={inputRef}
 				searchTerm={searchTerm}
 			/>
-			{results?.items?.length > 0 && (
+			{!collapsed && results?.items?.length > 0 && (
 				<div className={`${styles.dropdownContainer} ep-autosuggest`}>
 					<ul className={`${styles.dropdownList} autosuggest-list`} role="listbox">
 						{results?.items?.map((result, index) => {
@@ -70,6 +71,7 @@ AutosuggestField.defaultProps = {
 	minSearchCharacters: 3,
 	searchTerm: '',
 	onItemRender: (item) => item,
+	collapsed: false,
 };
 
 AutosuggestField.propTypes = {
@@ -79,6 +81,7 @@ AutosuggestField.propTypes = {
 	minSearchCharacters: PropTypes.number,
 	searchTerm: PropTypes.string,
 	onItemRender: PropTypes.func,
+	collapsed: PropTypes.bool,
 };
 
 export default AutosuggestField;

@@ -9,7 +9,7 @@ import { useSearch } from '../../hooks';
 
 const SearchField = React.forwardRef(
 	({ placeholder, initialValue, name, minSearchCharacters, debounceMs, searchTerm }, ref) => {
-		const [localSearchTerm, setLocalSearchTerm] = useState(searchTerm);
+		const [localSearchTerm, setLocalSearchTerm] = useState('');
 		const { refine } = useSearch();
 
 		const search = useCallback(
@@ -22,6 +22,10 @@ const SearchField = React.forwardRef(
 			),
 			[refine, minSearchCharacters, debounceMs],
 		);
+
+		useEffect(() => {
+			setLocalSearchTerm(searchTerm);
+		}, [searchTerm]);
 
 		// search if a initial value is provided from parent component
 		useEffect(() => {
