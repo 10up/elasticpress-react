@@ -16,7 +16,7 @@ const AutosuggestField = ({
 	name,
 	minSearchCharacters,
 	searchTerm,
-	resultFilter,
+	onItemRender,
 }) => {
 	const {
 		state: { search, results },
@@ -52,7 +52,7 @@ const AutosuggestField = ({
 									setFocus={setFocus}
 									index={index}
 									focus={focus === index}
-									result={resultFilter(result)}
+									result={onItemRender(result)}
 								/>
 							);
 						})}
@@ -69,7 +69,7 @@ AutosuggestField.defaultProps = {
 	initialValue: '',
 	minSearchCharacters: 3,
 	searchTerm: '',
-	resultFilter: (item) => item,
+	onItemRender: (item) => item,
 };
 
 AutosuggestField.propTypes = {
@@ -78,7 +78,7 @@ AutosuggestField.propTypes = {
 	placeholder: PropTypes.string,
 	minSearchCharacters: PropTypes.number,
 	searchTerm: PropTypes.string,
-	resultFilter: PropTypes.func,
+	onItemRender: PropTypes.func,
 };
 
 export default AutosuggestField;
