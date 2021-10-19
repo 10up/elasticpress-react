@@ -8,7 +8,7 @@ import debounce from 'lodash.debounce';
 import { useSearch } from '../../hooks';
 
 const SearchField = React.forwardRef(
-	({ placeholder, initialValue, name, minSearchCharacters, debounceMs }, ref) => {
+	({ placeholder, initialValue, name, minSearchCharacters, debounceMs, searchTerm }, ref) => {
 		const [localSearchTerm, setLocalSearchTerm] = useState('');
 		const { refine } = useSearch();
 
@@ -22,6 +22,10 @@ const SearchField = React.forwardRef(
 			),
 			[refine, minSearchCharacters, debounceMs],
 		);
+
+		useEffect(() => {
+			setLocalSearchTerm(searchTerm);
+		}, [searchTerm]);
 
 		// search if a initial value is provided from parent component
 		useEffect(() => {
@@ -54,6 +58,7 @@ SearchField.defaultProps = {
 	initialValue: '',
 	minSearchCharacters: 3,
 	debounceMs: 0,
+	searchTerm: '',
 };
 
 SearchField.propTypes = {
@@ -62,6 +67,7 @@ SearchField.propTypes = {
 	placeholder: PropTypes.string,
 	minSearchCharacters: PropTypes.number,
 	debounceMs: PropTypes.number,
+	searchTerm: PropTypes.string,
 };
 
 export default SearchField;
