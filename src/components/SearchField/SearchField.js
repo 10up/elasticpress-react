@@ -8,7 +8,10 @@ import debounce from 'lodash.debounce';
 import { useSearch } from '../../hooks';
 
 const SearchField = React.forwardRef(
-	({ placeholder, initialValue, name, minSearchCharacters, debounceMs, searchTerm }, ref) => {
+	(
+		{ placeholder, initialValue, name, minSearchCharacters, debounceMs, searchTerm, ...rest },
+		ref,
+	) => {
 		const [localSearchTerm, setLocalSearchTerm] = useState('');
 		const { refine } = useSearch();
 
@@ -47,6 +50,7 @@ const SearchField = React.forwardRef(
 					search(value);
 				}}
 				ref={ref}
+				{...rest}
 			/>
 		);
 	},

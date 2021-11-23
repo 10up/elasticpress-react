@@ -18,6 +18,7 @@ const AutosuggestField = ({
 	searchTerm,
 	onItemRender,
 	collapsed,
+	...rest
 }) => {
 	const {
 		state: { search, results },
@@ -42,6 +43,7 @@ const AutosuggestField = ({
 				minSearchCharacters={minSearchCharacters}
 				ref={inputRef}
 				searchTerm={searchTerm}
+				{...rest}
 			/>
 			{!collapsed && results?.items?.length > 0 && (
 				<div className={`${styles.dropdownContainer} ep-autosuggest`}>
