@@ -2,7 +2,7 @@
  * ElasticPress autosuggest field
  */
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 import styles from './styles.module.css';
 import AutosuggestFieldItem from './AutosuggestFieldItem';
