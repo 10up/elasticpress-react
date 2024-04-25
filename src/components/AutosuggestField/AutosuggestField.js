@@ -2,7 +2,7 @@
  * ElasticPress autosuggest field
  */
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 import styles from './styles.module.css';
 import AutosuggestFieldItem from './AutosuggestFieldItem';
@@ -26,13 +26,6 @@ const AutosuggestField = ({
 
 	const [focus, setFocus] = useRoveFocus(search.perPage);
 	const inputRef = useRef(null);
-
-	useEffect(() => {
-		if (focus === -1 && inputRef.current) {
-			// Move element into view when it is focused
-			inputRef.current.focus();
-		}
-	}, [focus]);
 
 	return (
 		<div className={`${styles.container} ep-autosuggest-container`}>
