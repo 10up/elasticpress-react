@@ -3,6 +3,7 @@ import RelatedContent from './components/RelatedContent/RelatedContent';
 import { SearchField } from './components/SearchField';
 import Posts from './components/Posts/Posts';
 import { ElasticPressProvider } from './components/Provider';
+import * as ProviderActions from './components/Provider/actions';
 import { useElasticPress, useSearch } from './hooks';
 import { findResultsState } from './server';
 import { buildQuery, runEPQuery, getESEndpoint } from './utils';
@@ -13,6 +14,7 @@ export {
 	RelatedContent,
 	SearchField,
 	ElasticPressProvider,
+	ProviderActions,
 	useElasticPress,
 	useSearch,
 	Posts,
