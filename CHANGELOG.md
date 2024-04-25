@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file, per [the Keep a Changelog standard](http://keepachangelog.com/), and will adhere to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.2] - April, 24, 2024
+- Remove useEffect to Prevent Auto-Focus in AutosuggestField [#53](https://github.com/10up/elasticpress-react/pull/53)
+
 ## [2.1.0] - October, 19, 2021
 - Extend provider configuration with new options and add ability to filter autocomplete results before rendering [#25](https://github.com/10up/elasticpress-react/pull/25)
 - Update dependencies.
